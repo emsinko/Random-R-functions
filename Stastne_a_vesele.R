@@ -28,4 +28,4 @@ for(i in 1:10){
 # zdroj: https://gist.github.com/jtleek/4369771
 
 # Lahka uprava:
-text("Šastné a veselé", x=0, y=9.5, col = "red", cex= 2)
+text("Å Å¥astnÃ© a veselÃ©, x=0, y=9.5, col = "red", cex= 2)
