@@ -1,0 +1,15 @@
+expected_value <- function(x,p){
+  sum(x*p)
+}
+
+variance <- function(x,p){
+  expected_value(x^2,p) - expected_value(x,p)^2
+}
+
+variance_v2 <- function(x,p){
+  expected_value( (x-expected_value(x,p))^2, p )
+}
+
+standard_deviation <- function(x,p){
+  sqrt(variance(x,p))
+}
