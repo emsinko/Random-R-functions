@@ -19,6 +19,7 @@ two_same <- function(a,b,c){
   else return(1)
 }
 
+'%notin%' <- Negate('%in%')
 
 
 # Vypocet integralu pomocou trapezium metody
