@@ -21,6 +21,25 @@ two_same <- function(a,b,c){
 
 '%notin%' <- Negate('%in%')
 
+bisection_method <- function(f,a,b){
+  if( f(a)*f(b) < 0){
+    while(abs(a-b) > 0.00001){
+      c <- (a+b)/2
+      if(f(c) == 0) return(c)
+      if(f(a)*f(c) < 0){
+        b <- c
+      }
+      else{
+        a <- c 
+      }
+    }
+    return((a+b)/2)
+  } 
+  else{
+    return("Koren je mimo intervalu (a,b)")
+  }
+}
+
 
 # Vypocet integralu pomocou trapezium metody
 integral_trapez <- function(a,b,n,f){
