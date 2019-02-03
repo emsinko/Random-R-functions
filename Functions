@@ -90,8 +90,10 @@ splatka <- function(P = 55000,r = 1.2,n = 20){
   
   r <- r/100/12
   n <- 12*n
-  if(r == 0)  A <- P/n
-  else        A <- P*( (r*(1+r)^n)/((1+r)^n-1))  
+  if(r == 0)  
+    A <- P/n
+  else
+    A <- P*( (r*(1+r)^n)/((1+r)^n-1))  
   
   return(A)
   
