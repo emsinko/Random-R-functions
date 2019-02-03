@@ -77,3 +77,23 @@ ramon_report <- function(x,freq){
   
 }
 
+
+
+splatka <- function(P = 55000,r = 1.2,n = 20){
+
+  #########################################################################################
+  #  Vypocet mesacnej splatky pri fixnej urokovej sadzbe r, istiny P a doby splacania n   #
+  #  P    Istina                                                                          #
+  #  r    Urokova sadzba p.a.                                                             #
+  #  n    Pocet rokov splacania                                                           #
+  #########################################################################################
+  
+  r <- r/100/12
+  n <- 12*n
+  if(r == 0)  A <- P/n
+  else        A <- P*( (r*(1+r)^n)/((1+r)^n-1))  
+  
+  return(A)
+  
+  return(A)
+}
