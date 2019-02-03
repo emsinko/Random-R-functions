@@ -57,3 +57,23 @@ integral_trapez <- function(a,b,n,f){
 }
 integral_trapez(3, 4, 100, f = function(x) 2)
   
+#######
+
+ramon_report <- function(x,freq){ 
+  
+  library(glue) 
+  
+  data <- rep(x,freq)
+  n <- length(data)
+  var_data <- (n-1)/n*var(data)
+  sd_data <- sqrt(var_data)
+  
+  #print(sum(data^2)/n - mean(data)^2)
+  
+  print(glue("n: {round(length(data),2)}"))
+  print(glue("Mean: {round(mean(data),2)}"))
+  print(glue("Variance: {round(var_data,2)}"))
+  print(glue("Standard deviation: {round(sd_data,2)}"))
+  
+}
+
