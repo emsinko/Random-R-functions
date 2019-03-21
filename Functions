@@ -1,3 +1,23 @@
+# ====================================
+# Anomaly detection 
+# ====================================
+
+is_between <- function(x, left, right) return( (x >= left) & (x <= right))
+
+is_outlier <- function(x){
+  interval <- quantile(x,c(0.25,0.75)) + c(-1,1) * 1.5 * IQR(x)
+  return(!is_between(x,min(interval), max(interval)))
+}
+
+show_outlier <- function(x) x[is_outlier(x)]
+
+outlier_count <- function(x, uniqueCount = FALSE){
+  if(uniqueCount){
+    return(length((unique(x[is_outlier(x)]))))
+  } else return(sum(is_outlier(x)))
+} 
+
+===================================================================
 expected_value <- function(x,p){
   sum(x*p)
 }
