@@ -1,4 +1,39 @@
 # ====================================
+# Usefull
+# ====================================
+
+write.excel <- function(x,row.names=FALSE,col.names=TRUE,...) {
+  write.table(x,"clipboard",sep="\t", dec = "," , row.names=row.names,col.names=col.names,...)
+}
+
+usePackage <- function(p) {
+  if (!is.element(p, installed.packages()[,1]))
+    install.packages(p, dep = TRUE)
+  require(p, character.only = TRUE)
+}
+
+
+
+# ====================================
+# Connect to sql server + pull data 
+# ====================================
+
+usePackage("odbc")
+
+con <- dbConnect(odbc::odbc(), Driver = "SQL Server", Server = "server_name", Database = "db_name", Trusted_Connection = "True")
+
+# SQL query 
+sqlStr <- paste("
+  select *
+  from table
+  " 
+                )
+writeLines(sqlStr) # toto je len pohlad na skript
+data <- dbGetQuery(con, sqlStr)  # spustenie SQL skriptu
+
+
+
+# ====================================
 # Anomaly detection 
 # ====================================
 
