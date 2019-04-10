@@ -20,6 +20,14 @@ ggThemeAssistGadget(gg)
 
 '%notin%' <- Negate('%in%')
 
+sec_to_hms = function(sec) {
+  h = sec %/% 3600
+  m = sec %% 3600 %/% 60
+  s = floor(sec %% 3600 %% 60)
+  
+  return(sprintf("%02.f:%02.f:%02.f",h,m,s))
+}
+
 
 # ====================================
 # Connect to sql server + pull data 
