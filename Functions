@@ -13,6 +13,13 @@ usePackage <- function(p) {
 }
 
 
+usePackage("ggThemeAssist")
+gg <- ggplot(mtcars, aes(x = hp, y = mpg, colour = as.factor(cyl))) + geom_point() + theme_bw()
+ggThemeAssistGadget(gg)
+
+
+'%notin%' <- Negate('%in%')
+
 
 # ====================================
 # Connect to sql server + pull data 
@@ -53,6 +60,11 @@ outlier_count <- function(x, uniqueCount = FALSE){
 } 
 
 ===================================================================
+
+# ====================================
+# Probability & statistics 
+# ====================================
+
 expected_value <- function(x,p){
   sum(x*p)
 }
@@ -74,7 +86,27 @@ two_same <- function(a,b,c){
   else return(1)
 }
 
-'%notin%' <- Negate('%in%')
+ramon_report <- function(x,freq){ 
+  
+  library(glue) 
+  
+  data <- rep(x,freq)
+  n <- length(data)
+  var_data <- (n-1)/n*var(data)
+  sd_data <- sqrt(var_data)
+  
+  #print(sum(data^2)/n - mean(data)^2)
+  
+  print(glue("n: {round(length(data),2)}"))
+  print(glue("Mean: {round(mean(data),2)}"))
+  print(glue("Variance: {round(var_data,2)}"))
+  print(glue("Standard deviation: {round(sd_data,2)}"))
+  
+}
+
+
+===================================================================
+
 
 bisection_method <- function(f,a,b){
   if( f(a)*f(b) < 0){
@@ -112,25 +144,7 @@ integral_trapez <- function(a,b,n,f){
 }
 integral_trapez(3, 4, 100, f = function(x) 2)
   
-#######
 
-ramon_report <- function(x,freq){ 
-  
-  library(glue) 
-  
-  data <- rep(x,freq)
-  n <- length(data)
-  var_data <- (n-1)/n*var(data)
-  sd_data <- sqrt(var_data)
-  
-  #print(sum(data^2)/n - mean(data)^2)
-  
-  print(glue("n: {round(length(data),2)}"))
-  print(glue("Mean: {round(mean(data),2)}"))
-  print(glue("Variance: {round(var_data,2)}"))
-  print(glue("Standard deviation: {round(sd_data,2)}"))
-  
-}
 
 
 
