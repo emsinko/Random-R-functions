@@ -30,3 +30,7 @@ meme_get("ExpandingBrain") %>%
                   "Making memes in R", 
                   "Using rtweet to share your memes", 
                   size = 17);
+
+# creditR
+
+https://www.analyticsvidhya.com/blog/2019/03/introduction-creditr-r-package-enhance-credit-risk-scoring-validation-r-codes/
