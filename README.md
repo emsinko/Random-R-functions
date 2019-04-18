@@ -10,7 +10,9 @@ https://www.analyticsvidhya.com/blog/2019/04/8-useful-r-packages-data-science/?u
 install.packages("esquisse")
 
 #Load the package in R
+
 library(esquisse)
+
 esquisse::esquisser()
 
 # Memer
@@ -18,6 +20,7 @@ esquisse::esquisser()
 devtools::install_github("sctyner/memer")
 
 library(memer)
+
 meme_list()
 
 
