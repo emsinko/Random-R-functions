@@ -1,5 +1,4 @@
-data %>% group_by(TRANSPMODE) %>% summarize(mean(SALARY), n = n())
-
+# Manual calculation
 
 SST <- 
 data %>% 
@@ -10,7 +9,6 @@ data %>%
   as.numeric()
 
 
-
 SSE_i <- 
 data.frame(TRANSPMODE = data$TRANSPMODE,
            SALARY = data$SALARY,
@@ -19,27 +17,27 @@ data.frame(TRANSPMODE = data$TRANSPMODE,
                     ifelse(data$TRANSPMODE == 3, mean(data[data$TRANSPMODE == 3, "SALARY"]),
                     ifelse(data$TRANSPMODE == 4, mean(data[data$TRANSPMODE == 4, "SALARY"]),
                     ifelse(data$TRANSPMODE == 5, mean(data[data$TRANSPMODE == 5, "SALARY"]),
-                      "error"))))))
+                      NA))))))
            
-SSE <- sum((SSE_i$SALARY - as.numeric(SSE_i$mean_i))^2)  # tu treba este to as.numeric opravit lebo dava cisla 1,2,3,4.. a bude dobre 
+SSE <- sum((SSE_i$SALARY - SSE_i$mean_i)^2)  
 
 SSTO <- SSE + SST
 
 
-p = 5
-n = length(data$SALARY)
+p <- 5
+n <- length(data$SALARY)
 
-MST = SST / (p - 1)
-MSE = SSE / (n - p)
+MST <- SST / (p - 1)
+MSE <- SSE / (n - p)
 
-F_statistic = MST / MSE
+F_statistic <- MST / MSE
+F_statistic 
 
 2 * (1 - pf(F_statistic, df1 = p-1 , df2 = n-p)) # pvalue 
 
+# Check with built-in function
 anova_one_way <- aov(SALARY~factor(TRANSPMODE), data = data)
 summary(anova_one_way)
-
-F_statistic
 
 # ====================================
 # Usefull
