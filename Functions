@@ -33,7 +33,7 @@ MSE <- SSE / (n - p)
 F_statistic <- MST / MSE
 F_statistic 
 
-2 * (1 - pf(F_statistic, df1 = p-1 , df2 = n-p)) # pvalue 
+1 - pf(F_statistic, df1 = p-1 , df2 = n-p) # pvalue
 
 # Check with built-in function
 anova_one_way <- aov(SALARY~factor(TRANSPMODE), data = data)
