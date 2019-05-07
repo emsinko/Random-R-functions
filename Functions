@@ -21,7 +21,7 @@ data.frame(TRANSPMODE = data$TRANSPMODE,
                     ifelse(data$TRANSPMODE == 5, mean(data[data$TRANSPMODE == 5, "SALARY"]),
                       "error"))))))
            
-SSE <- sum((SSE_i$SALARY - as.numeric(SSE_i$mean_i))^2)
+SSE <- sum((SSE_i$SALARY - as.numeric(SSE_i$mean_i))^2)  # tu treba este to as.numeric opravit lebo dava cisla 1,2,3,4.. a bude dobre 
 
 SSTO <- SSE + SST
 
@@ -36,6 +36,10 @@ F_statistic = MST / MSE
 
 2 * (1 - pf(F_statistic, df1 = p-1 , df2 = n-p)) # pvalue 
 
+anova_one_way <- aov(SALARY~factor(TRANSPMODE), data = data)
+summary(anova_one_way)
+
+F_statistic
 
 # ====================================
 # Usefull
