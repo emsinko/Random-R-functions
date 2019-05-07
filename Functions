@@ -1,3 +1,42 @@
+data %>% group_by(TRANSPMODE) %>% summarize(mean(SALARY), n = n())
+
+
+SST <- 
+data %>% 
+  group_by(TRANSPMODE) %>% 
+  summarize(mean_i = mean(SALARY), n_i = n()) %>% 
+  mutate(total_mean = mean(data$SALARY), SST_i = n_i * (mean_i - total_mean)^2,SST = sum(SST_i) ) %>% 
+  summarise(SST = sum(SST_i)) %>%
+  as.numeric()
+
+
+
+SSE_i <- 
+data.frame(TRANSPMODE = data$TRANSPMODE,
+           SALARY = data$SALARY,
+           mean_i = ifelse(data$TRANSPMODE == 1, mean(data[data$TRANSPMODE == 1, "SALARY"]), 
+                    ifelse(data$TRANSPMODE == 2, mean(data[data$TRANSPMODE == 2, "SALARY"]),
+                    ifelse(data$TRANSPMODE == 3, mean(data[data$TRANSPMODE == 3, "SALARY"]),
+                    ifelse(data$TRANSPMODE == 4, mean(data[data$TRANSPMODE == 4, "SALARY"]),
+                    ifelse(data$TRANSPMODE == 5, mean(data[data$TRANSPMODE == 5, "SALARY"]),
+                      "error"))))))
+           
+SSE <- sum((SSE_i$SALARY - as.numeric(SSE_i$mean_i))^2)
+
+SSTO <- SSE + SST
+
+
+p = 5
+n = length(data$SALARY)
+
+MST = SST / (p - 1)
+MSE = SSE / (n - p)
+
+F_statistic = MST / MSE
+
+2 * (1 - pf(F_statistic, df1 = p-1 , df2 = n-p)) # pvalue 
+
+
 # ====================================
 # Usefull
 # ====================================
