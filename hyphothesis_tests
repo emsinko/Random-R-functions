@@ -1,0 +1,17 @@
+# Dvojvýberový t-test 
+
+# Test na porovnanie rovnosti strednych hodnot dvoch suborov 
+
+# 1) Rovnost variancii dvoch suborov 
+
+x <- c(1,2,3,4)
+y <- c(2,1,3,4.5)
+n_x <- length(x)
+n_y <- length(y)
+
+s2 <-   (sum(( x-mean(x) )^2) + sum(( y-mean(y) )^2)) / (n_x + n_y -2 )  # pooled variance 
+test_statistic <-  (mean(x) - mean(y)) / sqrt(s2 * (1/n_x + 1/n_y)) 
+t.test(x,y, var.equal = T)
+
+
+
