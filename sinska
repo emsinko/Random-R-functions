@@ -1,18 +1,49 @@
+data <- read.csv("treatments.txt", sep=";")
+
+data$difference <-  data$stressBefore - data$stressAfter
+
+library(tidyverse)
+
+data %>% 
+  ggplot(aes(y = difference, fill = gender)) +
+  geom_boxplot() + 
+  facet_grid(Treatment) + 
+  theme_bw()
+
+
 ###############
 ## 2 EXAMPLE ##
 ###############
 
-data_ALL <- read.csv("C:/Users/markus/Desktop/Sinska1.txt", sep=";")
+# 1) 
+#http://uc-r.github.io/discriminant_analysis
 
+
+
+# Import data
+data_ALL <- read.csv("creditdata.txt", sep=";")
+
+# 2) Columns:
+#default (whether a person defaults on a loan or not), 
+#duration (loan duration in months), 
+#amount (credit amount), 
+#installment (as a percentage of disposable income) 
+#age
 
 cols <- c("Default", "duration", "amount", "installment", "age")
 
 
+# 3)
+# Summary od selected columns:
+
+# Only means:
+sapply(data_ALL[cols],mean)
+
+# More summary informations:
 summary(data_ALL[cols])
 
 
-
-# Histogramy:
+# Histograms:
 hist(data_ALL$duration,breaks = 10, main = "Duration")
 hist(data_ALL$amount,breaks = 10, main = "Amount")
 hist(data_ALL$installment,breaks = 10, main = "Installment")
@@ -20,9 +51,9 @@ hist(data_ALL$age,breaks = 10, main = "Age")
 
 
 
-# Normality test spolu:
+# Normality test together:
 apply(data_ALL[cols] , MARGIN = 2, FUN = shapiro.test)
-sapply(data_ALL[cols] , FUN = shapiro.test)
+sapply(data_ALL[cols] , FUN = shapiro.test)  # or with this function
 
 # Normality test po jednom:
 shapiro.test(data_ALL$duration)
@@ -30,6 +61,79 @@ shapiro.test(data_ALL$amount)
 shapiro.test(data_ALL$installment)
 shapiro.test(data_ALL$age)
 
-# Ziadna z premennych nie je normalna. P-value su vvyrzne nizsie ako 5% 
+# Every variable has p-value much smaller then 0.05, we reject H0: variable_i is from normal distribution
+# We can not assume normality
 
+# 4) Split the data set randomly
+
+# Set seed for reproducible code & generate ~~ 80% vs. 20%  
+set.seed(1)
+is_train_index <- sample(x = c(TRUE,FALSE),size = nrow(data_ALL),replace = TRUE,prob = c(0.8, 0.2))
+
+train <- data_ALL[is_train_index,cols]
+test <- data_ALL[!is_train_index,cols]
+
+# Check for 80% vs. 20%
+nrow(train) / nrow(data_ALL)
+nrow(test) / nrow(data_ALL)
+
+# Default rates should be almost same 
+mean(test$Default)  #
+mean(train$Default)
+
+# 5) Using built-in-functions in R, train all three classication methods on the
+
+#https://datascienceplus.com/how-to-perform-logistic-regression-lda-qda-in-r/
+
+library(MASS) # import package for lda and qda functions.
+lda_model <- lda(Default ~ . ,data = train)
+qda_model <- qda(Default ~ . ,data = train)
+logistic_model <- glm(Default ~ . ,data = train, family = "binomial")
+
+# 6) Confusion matrix + model performacne
+
+accuracy <- function(tab) sum(diag(tab))/sum(tab)
+
+treshold <- mean(train$Default)
+
+# Confusion matrix logistic
+conf_logistic <- 
+  table( Real = test$Default,
+         Predicted = ifelse(predict(logistic_model, newdata = test, type = "response") < treshold, 0,1)         )
+
+conf_logistic
+
+
+# Confusion matrix LDA
+conf_lda <- 
+  table(Real = test$Default,
+        Predicted = predict(lda_model, newdata = test)$class)
+
+
+
+# Confusion matrix QDA:
+conf_qda<- 
+  table(Real = test$Default,
+        Predicted = predict(qda_model, newdata = test)$class)
+
+
+
+# Accuracy
+accuracy(conf_logistic)
+accuracy(conf_lda)
+accuracy(conf_qda)
+
+# Missclasification rate = 1 - accuracy
+
+1 - accuracy(conf_logistic)
+1 - accuracy(conf_lda)
+1 - accuracy(conf_qda)
+
+
+# 7) Predict 
+new_data <- data.frame(duration = 12, amount = 2000, installment = 4, age = 60)
+
+predict(lda_model, newdata = new_data)$class  # no
+predict(qda_model, newdata = new_data)$class  # no 
+predict(logistic_model, newdata = new_data, type ="response") #no , proba = 0.1780334
 
