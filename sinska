@@ -1,0 +1,35 @@
+###############
+## 2 EXAMPLE ##
+###############
+
+data_ALL <- read.csv("C:/Users/markus/Desktop/Sinska1.txt", sep=";")
+
+
+cols <- c("Default", "duration", "amount", "installment", "age")
+
+
+summary(data_ALL[cols])
+
+
+
+# Histogramy:
+hist(data_ALL$duration,breaks = 10, main = "Duration")
+hist(data_ALL$amount,breaks = 10, main = "Amount")
+hist(data_ALL$installment,breaks = 10, main = "Installment")
+hist(data_ALL$age,breaks = 10, main = "Age")
+
+
+
+# Normality test spolu:
+apply(data_ALL[cols] , MARGIN = 2, FUN = shapiro.test)
+sapply(data_ALL[cols] , FUN = shapiro.test)
+
+# Normality test po jednom:
+shapiro.test(data_ALL$duration)
+shapiro.test(data_ALL$amount)
+shapiro.test(data_ALL$installment)
+shapiro.test(data_ALL$age)
+
+# Ziadna z premennych nie je normalna. P-value su vvyrzne nizsie ako 5% 
+
+
