@@ -28,6 +28,10 @@ sec_to_hms = function(sec) {
   return(sprintf("%02.f:%02.f:%02.f",h,m,s))
 }
 
+unique_value <- function (x) length(unique(x))
+na_value <- function (x) sum(is.na(x))
+blank_value = function (x) sum(x=="") 
+missing_rate = function (x) {100 * sum (is.na(x)) / length (x) }
 
 # ====================================
 # Connect to sql server + pull data 
