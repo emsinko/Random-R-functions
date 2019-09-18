@@ -1,3 +1,19 @@
+splatkac docasne:
+datum_cr <- as.Date("2019-03-31")
+day_from <- as.Date("2019-04-20")
+day_to <- as.Date("2019-08-20")
+id <- 12312
+splatka <- 21.34775
+urok <- 0.012
+istina <- 250.6253
+
+
+
+
+length(seq(from=day_from, to=day_to, by='month')) - 1
+
+
+
 # ====================================
 # Usefull
 # ====================================
