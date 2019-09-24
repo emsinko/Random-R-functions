@@ -11,9 +11,14 @@ number_of_month_payments <- function(day_from,day_to ){
 }
 
 
-vytvor_splatkovy_kalendar <- function(datum_cr = as.Date('2019-02-28'),datum_cerpania,datum_splatnosti, datum_prvej_splatky, splatka, poskytnuta_ciastka, urokova_sadzba){
-   
+
+vytvor_splatkovy_kalendar <- function(datum_cr,datum_cerpania,datum_splatnosti, datum_prvej_splatky, splatka, poskytnuta_ciastka, urokova_sadzba){
+  
+  datum_cr <- as.Date(datum_cr)
   datum_splatnosti <- as.Date(datum_splatnosti)
+  datum_cerpania <- as.Date(datum_cerpania)
+  datum_splatnosti <- as.Date(datum_splatnosti)
+  datum_prvej_splatky <- as.Date(datum_prvej_splatky)
   
   istina_pred_splatkou <- poskytnuta_ciastka * ( 1+ days_between(datum_cerpania, datum_prvej_splatky, inclusive = F) / 365 * urokova_sadzba)
   istina_po_splatke <- istina_pred_splatkou - splatka
@@ -22,7 +27,7 @@ vytvor_splatkovy_kalendar <- function(datum_cr = as.Date('2019-02-28'),datum_cer
   umor <- splatka - urok 
   
   splatkovy_kalendar <- 
-    data.frame(datum_cr, 
+    tibble(datum_cr, 
                datum_cerpania, 
                datum_prvej_splatky,
                poskytnuta_ciastka,
@@ -37,43 +42,32 @@ vytvor_splatkovy_kalendar <- function(datum_cr = as.Date('2019-02-28'),datum_cer
   
   while(OK){
     istina_pred_splatkou <- istina_po_splatke *  (1 + lubridate::days_in_month(datum_splatky) / 365 * urokova_sadzba)
+    urok <- istina_po_splatke *  (lubridate::days_in_month(datum_splatky) / 365 * urokova_sadzba)
     istina_po_splatke <- istina_pred_splatkou - splatka
-    urok <- istina_pred_splatkou - poskytnuta_ciastka
+   
     umor <- splatka - urok 
     month(datum_splatky) <- month(datum_splatky) + 1
     
-    splatkovy_kalendar <- 
-      rbind(splatkovy_kalendar,
-                 datum_cr, 
-                 datum_cerpania, 
-                 datum_prvej_splatky,
-                 poskytnuta_ciastka,
-                 urokova_sadzba,
-                 istina_pred_splatkou,
-                 splatka,
-                 urok, 
-                 umor, 
-                 istina_po_splatke,
-                 datum_splatky)
-    
+    novy_zaznam <- data.frame(datum_cr,datum_cerpania,datum_prvej_splatky,poskytnuta_ciastka, urokova_sadzba,
+                     istina_pred_splatkou,splatka,urok,umor,istina_po_splatke, datum_splatky)
+   
+    splatkovy_kalendar <- rbind(splatkovy_kalendar, novy_zaznam)
+       
     if(datum_splatky >= datum_splatnosti) OK <- FALSE
   }
   
-  #splatkovy_kalendar
-  
-  
-  #print(istina_pred_splatkou)
-  #print(days_between(datum_cerpania, datum_prvej_splatky))
+  return(splatkovy_kalendar)
+ 
 }
 
 vytvor_splatkovy_kalendar(
+  datum_cr = '2019-02-28',
   datum_cerpania = '2019-02-05', 
   datum_splatnosti = '2049-02-20',
   datum_prvej_splatky =  '2019-03-20', 
   splatka = 208.53, 
   poskytnuta_ciastka = 63000, 
   urokova_sadzba = 1.2 / 100)
-  
   
   
   
