@@ -38,3 +38,7 @@ https://www.analyticsvidhya.com/blog/2019/03/introduction-creditr-r-package-enha
 
 # scorecard development
 https://rstudio-pubs-static.s3.amazonaws.com/376828_032c59adbc984b0ab892ce0026370352.html
+
+# datapasta
+https://github.com/MilesMcBain/datapasta
+
