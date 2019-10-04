@@ -55,4 +55,12 @@ plab <- data.frame(principal = c(50000,1000,5), instalment = c(288.77,42.76, 1),
 
 plab %>% mutate(urok = find_rate_vec(n = months, istina = principal, splatka = instalment),
                 urok_percent = paste(urok*100,"%"))
+                 
+                 
+#######
+## Ulozenie na server 
+
+library(odbc)
+con <- dbConnect(odbc::odbc(), Driver = "SQL Server", Server = "sqlserver_nazov", Database = "Nazov_schemy", Trusted_Connection = "True")
+#odbc::dbWriteTable(con, "ZL_urokova_sadzba", output)    ## ZL_urokova_sadzba = nazov tabulky              
 
