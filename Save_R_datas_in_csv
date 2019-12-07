@@ -1,0 +1,10 @@
+# Script to save standard R datasets for use in other programming languages
+
+library(tidyverse)
+
+data()  # this command will show which datasets are available
+
+dataset  <- "AirPassengers"  # choose a dataset listed from the data() command
+filename <- "./data.csv"  # choose output filename here
+
+write_csv(as_tibble(dataset), filename)  # save as .csv file
