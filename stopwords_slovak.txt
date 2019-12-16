@@ -7,8 +7,6 @@ ale
 alebo
 and
 ani
-áno
-ano
 asi
 až
 az
