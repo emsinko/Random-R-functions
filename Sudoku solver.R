@@ -41,6 +41,14 @@ get_left_upper_index_of_sector <- function(row_index, column_index){
   if(get_sector(row_index, column_index) == 9) return(list(column = 7, row = 7))
 }
 
+sector_lookuptab <- 
+  matrix(c( 
+    rep(c(rep(1,3), rep(4,3), rep(7,3)),3), 
+    rep(c(rep(2,3), rep(5,3), rep(8,3)),3),
+    rep(c(rep(3,3), rep(6,3), rep(9,3)),3)
+  ), nrow = 9, ncol = 9, byrow = FALSE)
+
+
 check_solution <- function(solved_sudoku){
   if(
     all
@@ -61,6 +69,9 @@ check_solution <- function(solved_sudoku){
   else return(FALSE) #("Solution is incorrect")
 }
 
+library(tidyverse)
+
+grids <- read.delim("https://projecteuler.net/project/resources/p096_sudoku.txt", header = FALSE, stringsAsFactors = FALSE)
 
 sudoku <- 
   grids[2:10, ] %>%
@@ -80,13 +91,6 @@ sudoku <-
 solve_sudoku <- function(sudoku, max_iter = 20){
   
   candidates <- matrix(rep(list(1:9), times = 81), nrow = 9, ncol = 9)
-  
-  sector_lookuptab <- 
-    matrix(c( 
-      rep(c(rep(1,3), rep(4,3), rep(7,3)),3), 
-      rep(c(rep(2,3), rep(5,3), rep(8,3)),3),
-      rep(c(rep(3,3), rep(6,3), rep(9,3)),3)
-    ), nrow = 9, ncol = 9, byrow = FALSE)
   
   time <- Sys.time()
   for(i in 1:max_iter){
@@ -203,5 +207,163 @@ sudoku <-
   matrix(ncol = 9, nrow = 9, byrow = T)
 
 solve_sudoku(sudoku, max_iter = 30)
+solve_sudoku_backpropagation(sudoku, num_iter = 100000) nefunguje okraj, neohranicilo mi to 9 na spodku
+
+
+#################################
+### BACKPROPAGATION ALGORITHM ###
+#################################
+library(tidyverse)
+
+grids <- read.delim("https://projecteuler.net/project/resources/p096_sudoku.txt", header = FALSE, stringsAsFactors = FALSE)
+
+sudoku <- 
+  grids[2:10, ] %>%
+  strsplit("") %>%
+  unlist() %>%
+  as.integer() %>%
+  matrix(ncol = 9, nrow = 9, byrow = T)
+
+
+get_sector <- function(row_index, col_index){
+  return(3 * ( (row_index - 1) %/% 3) + (col_index - 1) %/% 3 + 1)
+}
+
+
+get_row_column_index <- function(index){
+  return(list(row = (index-1) %% 9 + 1, column = floor((index -1) / 9) + 1))
+}
+
+get_non_unique_numbers_from_sector <- function(sudoku_grid, row_index, col_index){
+  return(sudoku_grid[sector_lookuptab == get_sector(row_index, col_index)])
+}
+
+
+check_rules <- function(sudoku_grid, row_index, column_index){
+  return(
+    all(
+      sum(sudoku_grid[row_index , ] == sudoku_grid[row_index,column_index]) == 1,
+      sum(sudoku_grid[,column_index] == sudoku_grid[row_index,column_index]) == 1,
+      sum(get_non_unique_numbers_from_sector(sudoku_grid, row_index,column_index) == sudoku_grid[row_index,column_index]) == 1 
+    )
+  )
+}
+
+sector_lookuptab <- 
+  matrix(c( 
+    rep(c(rep(1,3), rep(4,3), rep(7,3)),3), 
+    rep(c(rep(2,3), rep(5,3), rep(8,3)),3),
+    rep(c(rep(3,3), rep(6,3), rep(9,3)),3)
+  ), nrow = 9, ncol = 9, byrow = FALSE)
+
+solve_sudoku_backpropagation <- function(sudoku, num_iter = 1000){
+
+time <- Sys.time()
+filled_matrix <- sudoku != 0
+sudoku_copy <- sudoku
+
+filled_indexes <- which(filled_matrix == TRUE)
+unfilled_indexes <- which(filled_matrix == FALSE)
+
+index <- min(unfilled_indexes)
+
+sudoku_copy[index] <- 1
+
+#if(sudoku_copy[index] == 9){
+#  return("CHYBA !! NEDA SA VYPLNIT POLICKO")
+#}
+
+###############
+### FOR CYKLUS / WHILE CYKLUS ! 
+
+for(i in 1:num_iter){
+  #print(paste("Iteration:",i,"           Position of sudoku:",index,"/ 81"))
+  
+  # Ak cislo v policku splna pravidla:
+  if(check_rules(sudoku_copy,get_row_column_index(index)$row, get_row_column_index(index)$column)){
+    if(index == max(unfilled_indexes)){
+      print(paste("Sudoku solved in", Sys.time() - time, "secs. with",i,"iterations"))
+      return(sudoku_copy)
+    }
+    index <- index + 1 # posunieme sa o 1 policko dopredu
+    helper <- 1  # zapamatame si smer 
+    #print(paste("index",index))
+  # Ak este mozeme zvysovat cislo:
+  } else if(sudoku_copy[index] != 9){  
+    sudoku_copy[index] <- sudoku_copy[index] + 1  # zvysime hodnotu policka o 1
+    helper <- 0
+    #print(sudoku_copy[index])
+  # Ak uz je aktualne cislo = 9      
+  } else {                          
+    sudoku_copy[index] <- 0 # vynuluj mi aktualne policko
+    index <- index - 1      # vrat sa o jedno policko spät
+    helper <- -1            # zapamatanie smeru (ak by bolo predvyplnene policko vzadu, musime ho preskocit) 
+  }
+  
+  #print(index)
+  while(index %in% filled_indexes){
+    index <- index + 1 * helper
+  }
+  
+  # Ak sme sa posuvali dopredu: 
+  if(helper == 1){ 
+    sudoku_copy[index] <- 1  # inicializujeme policko 
+  
+  # Ak sme sa posunuli dozadu:
+  } else if( (helper == -1) & (sudoku_copy[index] != 9) ){
+    sudoku_copy[index] <- sudoku_copy[index] + 1 
+  } else if( (helper == -1) & (sudoku_copy[index] == 9) ){
+    ## CHYBA: ak je helper -1 a presiahli sme 
+    sudoku_copy[index] <- 0
+    index <- index - 1 # A ZASE MUSIME CHCECKNUT CI NEJDE O CISLO ZO ZADANIA .. rekurzia
+    
+    while(index %in% filled_indexes){
+      index <- index + 1 * helper
+    }
+    sudoku_copy[index] <- sudoku_copy[index] + 1 
+  }
+  
+  # if(helper == 0){
+  #  next()
+  # }
+  
+  #} else if(sudoku_copy[index] != 9){     ## NAVYS AK SA DA, ALEBO SA VRAT 
+  #  sudoku_copy[index] <- sudoku_copy[index] + 1  # zvysime hodnotu policka o 1
+    
+    # Ak uz je aktualne cislo = 9      
+  #} else {                          
+  #  sudoku_copy[index] <- 0 # vynuluj mi aktualne policko
+  #  index <- index - 1      # vrat sa o jedno policko spät
+  #  helper <- -1            # zapamatanie smeru (ak by bolo predvyplnene policko vzadu, musime ho preskocit) 
+  }
+#############
+#############
+print("Unsolved sudoku:")
+return(sudoku_copy)
+}
+
+solve_sudoku_backpropagation(sudoku, num_iter = 1)
+
+sudoku
+
+sudoku_trans <- t(sudoku)
+
+# riesenie prvy stlpec: 483921657
+solve_sudoku_backpropagation(sudoku_trans, num_iter = 111100) # chyba pri 141-> 142. Prvy stlpec done, spodne cislo ok, ale nejde dalej v indexe 
+check_rules(solve_sudoku_backpropagation(sudoku_trans, num_iter = 9),4,1)
+
+test <- solve_sudoku_backpropagation(sudoku_trans, num_iter = 141)
+check_rules(test,9,1)
+test
+
+sum(test[9 , ] == test[9,1]) == 1,
+sum(test[,1] == test[9,1]) == 1,
+sum(get_non_unique_numbers_from_sector(test, 9,1) == test[9,1]) == 1 
+
+
+check_rules(test,get_row_column_index(9)$row, get_row_column_index(9)$column)
+
+get_sector(row_index, column_index)
+
 
 
