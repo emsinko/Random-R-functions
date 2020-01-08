@@ -1,27 +1,3 @@
-Skip to content
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
-
-@emsinko 
-Learn Git and GitHub without any code!
-  Using the Hello World guide, you’ll start a branch, write comments, and open a pull request.
-
-
-emsinko
-/
-  Random-R-functions
-0
-00
-Code Issues 0 Pull requests 0 Actions Projects 0 Wiki Security Insights Settings
-Random-R-functions/Sudoku solver.R
-@emsinko emsinko Add files via upload
-03aba22 8 hours ago
-369 lines (288 sloc)  14.1 KB
-
 #-------------------------
 #  SUDOKU SOLVER  --------
 # ------------------------
