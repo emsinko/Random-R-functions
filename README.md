@@ -44,3 +44,6 @@ https://github.com/MilesMcBain/datapasta
 
 # RFM analysis:
 https://www.r-bloggers.com/rfm-analysis-in-r/
+
+# Ipynb. to RmarkDown:
+https://rmarkdown.rstudio.com/docs/reference/convert_ipynb.html
