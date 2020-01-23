@@ -242,3 +242,14 @@ mocnina <- function(mat,power){
     }
   return(A)
 }
+
+
+
+round_signif <- function(x, p){
+
+# x - number
+# p - number of significant figures
+
+  n = floor(log10(x)) + 1 - p
+  10^n * round(abs(x)/10^n)
+}
