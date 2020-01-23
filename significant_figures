@@ -1,0 +1,10 @@
+# x - number
+# p - number of significant figures
+
+round_signif <- function(x, p) {
+  n = floor(log10(x)) + 1 - p
+  10^n * round(abs(x)/10^n)
+}
+
+
+
