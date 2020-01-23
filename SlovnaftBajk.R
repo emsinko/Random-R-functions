@@ -5,7 +5,9 @@ library(tidyverse)
 # https://rstudio.github.io/leaflet/map_widget.html
 
 data <- read.delim('data.csv',sep= ';')
-data <- read.delim("https://opendata.bratislava.sk/dataset/download/411",sep= ';')  # priamo z webu
+## neplatne: data <- read.delim("https://opendata.bratislava.sk/dataset/download/411",sep= ';')  # priamo z webu
+data <- read.delim("https://opendata.bratislava.sk/dataset/download/slovnaft-bajk-lokalizacia-vypozicnych-stanic-zdielanych-bicyklov/1",sep= ';')  # priamo z webu
+
 head(data)
 
 colnames(data) <- c("ID","nazov", "GPSlat","GPSlon")
