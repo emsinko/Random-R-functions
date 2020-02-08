@@ -1,51 +1,13 @@
-splatkac docasne:
-datum_cr <- as.Date("2019-03-31")
-day_from <- as.Date("2019-04-20")
-day_to <- as.Date("2019-08-20")
-id <- 12312
-splatka <- 21.34775
-urok <- 0.012
-istina <- 250.6253
-length(seq(from=day_from, to=day_to, by='month')) - 1
+RSS <- sum(residuals(model) ^ 2)
+TSS <- sum((x-mean(x))^2)
+ESS <- sum((fitted.values(model) - mean(x))^2)
+1 - RSS / TSS
 
-
-calculate_amortization_amount <-  function(principal, interest_rate, period){
-  x = (1 + interest_rate) ^ period
-  return( principal * (interest_rate * x) / (x - 1))
-}
-
-number_of_month_payments <- function(day_from,day_to ){
-  length( seq(from = as.Date(day_from), to = as.Date(day_to), by='month')) 
-}
-
-
-amortization_schedule <- function(principal, amortization_amount, interest_rate, first_payment, last_payment){
-  #amortization_amount <-  calculate_amortization_amount(principal, interest_rate, period)
-  #amortization_amount <- 208.53
-  number <- 1
-  period <- number_of_month_payments(day_from = first_payment,day_to = last_payment)
-  balance <- principal
-  schedule <- data.frame(name = c(), amortization_amount= c(), interest= c(), principal= c(), balance= c())
-  #print(period)
-  
-  while(number <= period){
-    interest <- balance * interest_rate
-    principal <- amortization_amount - interest
-    balance <- balance - principal
-    #if(balance - (amortization_amount - (balance * interest_rate)) > 0 ){
-    if(balance > 0){ 
-      schedule <- rbind(schedule, c(number, amortization_amount, interest, principal, balance)) 
-    } else {
-      schedule <- rbind(schedule, c(number, amortization_amount, interest, principal, balance)) 
-      #schedule[number, ] <- c(number, amortization_amount, interest, principal, balance  )
-    }
-    number <- number + 1
-  }
-  colnames(schedule) <- c("n","splatka", "urok", "umor", "istina")
-  if(schedule[number - 1,"istina"] > 0) warning("istina neklesla pod nulu")
-  schedule[number - 1, ] <- c(number - 1, amortization_amount + balance,  interest, schedule[number - 2, "istina"], 0)  # uprava na konecnych 0 € 
-  print(schedule)
-}
+# https://stats.stackexchange.com/questions/79399/calculate-variance-explained-by-each-predictor-in-multiple-regression-using-r
+model <- lm(...)
+anova_model <- anova(model)
+sum_squares <- anova_model$"Sum Sq"
+print(cbind(anova_model,explained_variance=sum_squares/sum(sum_squares)*100))
 
 
 
