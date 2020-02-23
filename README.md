@@ -1,6 +1,8 @@
 # Random-R-functions
 Custom R functions 
 
+# Choose statistical test
+https://stats.idre.ucla.edu/other/mult-pkg/whatstat/
 
 # R packages: 
 
