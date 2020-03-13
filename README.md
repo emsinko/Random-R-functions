@@ -1,6 +1,9 @@
 # Random-R-functions
 Custom R functions 
 
+# Beautiful Jekyll
+https://github.com/daattali/beautiful-jekyll#readme
+
 # Choose statistical test
 https://stats.idre.ucla.edu/other/mult-pkg/whatstat/
 
