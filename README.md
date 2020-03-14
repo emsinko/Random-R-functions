@@ -7,6 +7,9 @@ https://github.com/daattali/beautiful-jekyll#readme
 # Choose statistical test
 https://stats.idre.ucla.edu/other/mult-pkg/whatstat/
 
+# Radiant
+https://radiant-rstats.github.io/docs/data/report_r.html
+
 # R packages: 
 
 https://www.analyticsvidhya.com/blog/2019/04/8-useful-r-packages-data-science/?utm_source=facebook.com&utm_medium=social&fbclid=IwAR3Dn-InenLlcXXeqx0Co89c-DgoOSmHPAOd78vjp5aAXHKAHliIIIXj7jo
