@@ -1,0 +1,29 @@
+# Iwas training a predictive model for work for use in a Shiny App. However, as the training set was quite large (700k+ obs.), the model object to save was also quite large in size (500mb). This slows down your operation significantly!
+# Basically, all you really need are the coefficients (and a link function, in case of glm()). However, I can imagine that you are not eager to write new custom predictions functions, but that you would rather want to rely on R’s predict.lm and predict.glm. Hence, you’ll need to save some more object information.
+# Via Google I came to this blog, which provides this great custom R function (below) to decrease the object size of trained generalized linear models considerably! It retains only those object data that are necessary to make R’s predict functions work.
+# My saved linear model went from taking up half a GB to only 27kb! That’s a 99.995% reduction!
+
+strip_glm = function(cm) {
+  cm$y = c()
+  cm$model = c()
+  
+  cm$residuals = c()
+  cm$fitted.values = c()
+  cm$effects = c()
+  cm$qr$qr = c()  
+  cm$linear.predictors = c()
+  cm$weights = c()
+  cm$prior.weights = c()
+  cm$data = c()
+  
+  
+  cm$family$variance = c()
+  cm$family$dev.resids = c()
+  cm$family$aic = c()
+  cm$family$validmu = c()
+  cm$family$simulate = c()
+  attr(cm$terms,".Environment") = c()
+  attr(cm$formula,".Environment") = c()
+  
+  cm
+}
