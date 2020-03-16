@@ -1,6 +1,9 @@
 # Random-R-functions
 Custom R functions 
 
+# Step-By-Step Framework for Imbalanced Classification Projects
+https://machinelearningmastery.com/framework-for-imbalanced-classification-projects/?fbclid=IwAR0o7l3-aj0BwITw39M2bPkPmHHdvT1TPUGxjTAsMWJwx1Bu9RZsqjjazU0
+
 # Beautiful Jekyll
 https://github.com/daattali/beautiful-jekyll#readme
 
