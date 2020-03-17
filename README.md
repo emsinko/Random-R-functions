@@ -1,6 +1,9 @@
 # Random-R-functions
 Custom R functions 
 
+# Commonly used Machine Learning Algorithms (with Python and R Codes)
+https://www.analyticsvidhya.com/blog/2017/09/common-machine-learning-algorithms/?utm_source=blog&utm_medium=8-powerful-hacks-ace-data-science-hackathons
+
 # Step-By-Step Framework for Imbalanced Classification Projects
 https://machinelearningmastery.com/framework-for-imbalanced-classification-projects/?fbclid=IwAR0o7l3-aj0BwITw39M2bPkPmHHdvT1TPUGxjTAsMWJwx1Bu9RZsqjjazU0
 
