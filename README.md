@@ -56,6 +56,9 @@ https://rstudio-pubs-static.s3.amazonaws.com/376828_032c59adbc984b0ab892ce002637
 # datapasta
 https://github.com/MilesMcBain/datapasta
 
+# package report
+https://github.com/easystats/report
+
 # RFM analysis:
 https://www.r-bloggers.com/rfm-analysis-in-r/
 
