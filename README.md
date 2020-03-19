@@ -16,6 +16,16 @@ https://stats.idre.ucla.edu/other/mult-pkg/whatstat/
 # Radiant
 https://radiant-rstats.github.io/docs/data/report_r.html
 
+# Interpreting T-test and Anova
+https://www.r-bloggers.com/how-to-do-a-t-test-or-anova-for-many-variables-at-once-in-r-and-communicate-the-results-in-a-better-way/
+
+# RFM analysis:
+https://www.r-bloggers.com/rfm-analysis-in-r/
+
+# Ipynb. to RmarkDown:
+https://rmarkdown.rstudio.com/docs/reference/convert_ipynb.html
+
+
 # R packages: 
 
 https://www.analyticsvidhya.com/blog/2019/04/8-useful-r-packages-data-science/?utm_source=facebook.com&utm_medium=social&fbclid=IwAR3Dn-InenLlcXXeqx0Co89c-DgoOSmHPAOd78vjp5aAXHKAHliIIIXj7jo
@@ -62,12 +72,6 @@ https://github.com/MilesMcBain/datapasta
 
 # package report
 https://github.com/easystats/report
-
-# RFM analysis:
-https://www.r-bloggers.com/rfm-analysis-in-r/
-
-# Ipynb. to RmarkDown:
-https://rmarkdown.rstudio.com/docs/reference/convert_ipynb.html
 
 # Package for beginRs - easy plots
 https://github.com/pzhaonet/beginr
