@@ -29,6 +29,10 @@ library(esquisse)
 
 esquisse::esquisser()
 
+# Create fake data
+https://github.com/ropensci/charlatan
+
+
 # Memer
 
 devtools::install_github("sctyner/memer")
@@ -64,3 +68,6 @@ https://www.r-bloggers.com/rfm-analysis-in-r/
 
 # Ipynb. to RmarkDown:
 https://rmarkdown.rstudio.com/docs/reference/convert_ipynb.html
+
+# Package for beginRs - easy plots
+https://github.com/pzhaonet/beginr
