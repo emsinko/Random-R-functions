@@ -16,7 +16,7 @@ https://stats.idre.ucla.edu/other/mult-pkg/whatstat/
 # Radiant
 https://radiant-rstats.github.io/docs/data/report_r.html
 
-# Interpreting T-test and Anova
+# How to do a t-test or ANOVA for many variables at once in R and communicate the results in a better way
 https://www.r-bloggers.com/how-to-do-a-t-test-or-anova-for-many-variables-at-once-in-r-and-communicate-the-results-in-a-better-way/
 
 # RFM analysis:
