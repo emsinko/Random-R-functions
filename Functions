@@ -1,6 +1,6 @@
 RSS <- sum(residuals(model) ^ 2)
-TSS <- sum((x-mean(x))^2)
-ESS <- sum((fitted.values(model) - mean(x))^2)
+TSS <- sum((y-mean(y))^2)
+ESS <- sum((fitted.values(model) - mean(y))^2)
 1 - RSS / TSS
 
 # https://stats.stackexchange.com/questions/79399/calculate-variance-explained-by-each-predictor-in-multiple-regression-using-r
