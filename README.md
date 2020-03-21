@@ -66,6 +66,11 @@ https://www.analyticsvidhya.com/blog/2019/03/introduction-creditr-r-package-enha
 
 # scorecard development
 https://rstudio-pubs-static.s3.amazonaws.com/376828_032c59adbc984b0ab892ce0026370352.html
+https://medium.com/@yanhuiliu104/credit-scoring-scorecard-development-process-8554c3492b2b
+https://www.worldprogramming.com/blog/datascience/credit_scoring_pt5/
+https://towardsdatascience.com/intro-to-credit-scorecard-9afeaaa3725f
+https://rpubs.com/Mai_Thanh_Nguyen/441239
+
 
 # datapasta
 https://github.com/MilesMcBain/datapasta
