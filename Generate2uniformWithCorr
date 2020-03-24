@@ -1,0 +1,51 @@
+set.seed(1)  # Aby sme dostavali rovnake vysledky vzdy, nastavime si random seed
+r <- 0.5  # Nastavenie korelacie, ktoru by sme chceli dostat
+n <- 100  # Pocet vygenerovanych hodnot
+
+P <- matrix(c(1,r, r, 1), ncol = 2) # Korelacna matica
+U <- pnorm(matrix(rnorm(n * 2), ncol = 2) %*% chol(P)) # Generovanie 2 vektorov z rovnomerneho rozdelenie U(0,1)
+
+x1 <- U[ , 1] * 10 # zoberiem len prvy stlpec a vynasobim 10 aby som z U(0,1) mal U(0,10) - rovnomerne rozdelenie na [0,10]
+x2 <- U[ , 2] * 10 # to iste, len zoberiem druhy  stlpec
+
+# Vygenerujme si nahodne chyby z rozdelenia N(0,1)
+u <- rnorm(n, mean = 0, sd = 1)  
+
+# Nastavme si paramertre beta_0, beta_1 a beta_2
+beta_0 = 4
+beta_1 = 8
+beta_2 = 12
+
+# Vypocet zavislej premennej Y - plny model
+Y <- beta_0 + beta_1 * x1 + beta_2 * x2 + u
+
+# Vypocet zavislej premennej Y - simple model
+Y <- beta_0 + beta_1 * x1 + u
+
+# Estimate the model Y = beta_0 + beta_1 * x1
+model <- lm(Y ~ x1 )
+summary(model)
+
+# 1) Plot the data to check, whether you simulated them according to the requirements
+
+# a) Najskor zmeriame korelaciu medzi X1, a X2
+cor(x1,x2) # 0.4769749  - priblizne sedi. Ak chces dostat presne toto cislo, musis spustit s tym set.seed(1)
+
+# b) Pozreme, ci su x1 a x2 rovnomerneho rozdelenia:
+hist(x1, n = 5) # nie uplne, ale len pri 100 datach sa to da ocakavat
+hist(x2, n = 5) # v celku dobre 
+
+# c) Pozreme ci u splna N(0,1)
+mean(u) # ano, je to priblizne 0
+sd(u) # ano, je to priblizne 1
+
+# d) Je linearna zavislost medzi x1 / X2 a Y
+plot(x1, Y)  # vyrazna linearna
+plot(x2, Y)  # vacsie odchylky
+
+
+# PS: je za tym troska matetmatiky, konkretne tzv. kopula funckie. Ak si chces k tomu nieco precitat pozri sa tu:
+
+# Tu je link na to, ako vygenerovat to co chceme. Podla mna, kludne ho mozes uviest rovno v rieseni :)
+# https://stats.stackexchange.com/questions/66610/generate-pairs-of-random-numbers-uniformly-distributed-and-correlated
+
