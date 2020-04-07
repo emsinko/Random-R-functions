@@ -13,6 +13,9 @@ https://github.com/daattali/beautiful-jekyll#readme
 # Choose statistical test
 https://stats.idre.ucla.edu/other/mult-pkg/whatstat/
 
+# Linearity assumptions
+https://rpubs.com/aryn999/LinearRegressionAssumptionsAndDiagnosticsInR
+
 # Radiant
 https://radiant-rstats.github.io/docs/data/report_r.html
 
