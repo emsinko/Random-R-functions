@@ -28,6 +28,8 @@ https://www.r-bloggers.com/rfm-analysis-in-r/
 # Ipynb. to RmarkDown:
 https://rmarkdown.rstudio.com/docs/reference/convert_ipynb.html
 
+# Why not to select features before splitting your data
+https://towardsdatascience.com/why-not-to-select-features-before-splitting-your-data-2d6aba2e9fb
 
 # R packages: 
 
