@@ -90,6 +90,23 @@ outlier_count <- function(x, uniqueCount = FALSE){
 # Probability & statistics 
 # ====================================
 
+proportion_test <- function(n_x, n_y, N_x, N_y){
+    p_x = n_x / N_x
+    p_y = n_y / N_y
+    p = (n_x + n_y) / (N_x + N_y)
+    q = 1-p
+    
+    STATISTIC = (p_x - p_y)/(sqrt(p*q/N_x + p*q/N_y))
+    
+    
+    if(n_x * p < 5) warning("n_x * p < 5")
+    if(n_x * q < 5) warning("n_x * q < 5")
+    if(n_y * p < 5) warning("n_y * p < 5")
+    if(n_y * q < 5) warning("n_y * q < 5")
+    
+    STATISTIC
+    2 * (1 - pnorm(abs(STATISTIC)))
+}
 expected_value <- function(x,p){
   sum(x*p)
 }
