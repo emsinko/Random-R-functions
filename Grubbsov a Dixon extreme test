@@ -1,0 +1,89 @@
+x <- c(
+73.9,
+66.4,
+54.0,
+64.3,
+78.4,
+58.2,
+62.0,
+62.9,
+72.4,
+73.6,
+69.5,
+75.6,
+76.9,
+83.6,
+73.5,
+75.7,
+86.1,
+74.6,
+63.3,
+58.4,
+75.8)
+
+
+
+## Grubbsov test 
+
+# Otestujte minimalnu vahu studentov
+
+# H0: hodnota x_min nie je extremna   / pripadne x_max
+# H1: hodnota x_min je extremna      / pripadne x_max
+
+n <- length(x)
+
+# Pre max:
+test_statistic <- abs(mean(x) - max(x)) / sd(x) * sqrt(n/(n-1))
+
+
+# Pre min
+test_statistic <- abs(mean(x) - min(x)) / sd(x) * sqrt(n/(n-1))
+
+# Kriticka hodnota ma tabulkove hodnoty
+# alhpa = 0,05, n = 21
+
+test_statistic # 1.972
+critical <- 2.644
+
+# Ho zamietame ak testova statistika je vacsia ako kriticka hodnota
+ifelse(test_statistic > critical, "H0 zamietame a prijimame hypotezu  H1, t.j. je to extremna hodnota", "HO NEZAMIETAME, nie je to extremna hodnota")
+paste('Testova statistika je  rovna:', test_statistic)
+paste('Kriticka hodnota je :', critical)
+
+
+
+
+
+## Dixonov test 
+
+# Otestujte minimalnu vahu studentov
+
+# H0: hodnota x_min nie je extremna   / pripadne x_max
+# H1: hodnota x_min je extremna       / pripadne x_max
+
+n <- length(x)
+R <- max(x) - min(x)
+
+# Pre min
+test_statistic <- (sort(x)[2] - min(x)) / R
+
+# Pre max
+test_statistic <- (max(x) - sort(x)[n-1])/ R  
+  
+# Kriticka hodnota ma tabulkove hodnoty
+# alhpa = 0,05, n = 21
+
+test_statistic 
+critical <- 0.295
+
+# Ho zamietame ak testova statistika je vacsia ako kriticka hodnota
+ifelse(test_statistic > critical, "H0 zamietame a prijimame hypotezu  H1, t.j. je to extremna hodnota", "HO NEZAMIETAME, nie je to extremna hodnota")
+paste('Testova statistika je  rovna:', test_statistic)
+paste('Kriticka hodnota je :', critical)
+
+
+# Pre max:
+test_statistic <- abs(mean(x) - max(x)) / sd(x) * sqrt(n/(n-1))
+
+
+
