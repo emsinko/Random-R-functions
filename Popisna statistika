@@ -1,0 +1,70 @@
+kvartily <- function(x, Q){
+ r1 = length(x) / 4
+ r3 = 3 * length(x) / 4   
+ if(length(x) %% 4 == 0){
+     Q1 <- (sort(x)[r1] + sort(x)[r1 + 1]) / 2
+     Q3 <- (sort(x)[r3] + sort(x)[r3 + 1]) / 2
+ } else {
+     Q1 <- sort(x)[ceiling(r1)]
+     Q3 <- sort(x)[ceiling(r3)]
+ }
+ if(Q == "Q1") return(Q1)
+ if(Q == "Q3") return(Q3)
+}
+
+
+popisna_statistika <- function(x, n_i = NULL) {
+    
+    if(!is.null(n_i)) x <- rep(x, times = n_i)
+        
+    cat("Zoradené údaje: ") ; cat(x,sep = ",")
+    cat("\n")
+    cat("Počet záznamov (n): ") ; cat(length(x)) 
+    cat("\n")
+    cat("Aritmetický priemer: ") ; cat(mean(x))
+    cat("\n")
+    cat("Geometrický priemer: ") ; cat((prod(x))^(1/length(x)))
+    cat("\n")
+    cat("Medián: ") ; cat(median(x))
+    cat("\n")
+    cat("Modus: ") ; cat(sort(unique(x))[which.max(table(x))] )
+    cat("\n")
+    cat("Dolný kvartil (Q1): ") ; cat(kvartily(x, Q = "Q1")) ;
+    cat("\n")
+    cat("Horný kvartil (Q3): ") ; cat(kvartily(x, Q = "Q3"))
+    cat("\n")
+    cat("Minimálna hodnota: ") ; cat(min(x))
+    cat("\n")
+    cat("Maximálna hodnota: ") ; cat(max(x))
+    cat("\n")
+    cat("Variačné rozpätie: ") ; cat(max(x) - min(x))
+    cat("\n")
+    cat("Kvartilové rozpätie (Q3 - Q1): ") ; cat(kvartily(x, Q = "Q3") - kvartily(x, Q = "Q1"))
+    cat("\n")
+    cat("Kvartilová odchýlka (1/2 * (Q3 - Q1)): ") ; cat((kvartily(x, Q = "Q3") - kvartily(x, Q = "Q1"))/2)
+    cat("\n")
+    cat("Priemerná absolútna odchýlka (1/n * sum(abs(x - mean(x)))): ") ; cat(mean(abs(x-mean(x))))
+    cat("\n")
+    cat("Rozptyl výberového súboru: ") ; cat(1/length(x) * sum ((x-mean(x))^2))
+    cat("\n")
+    cat("Smerodajná odchýlka z výberového súboru (odmocnina z rozptylu výberového súboru: ") ; cat(sqrt(1/length(x) * sum ((x-mean(x))^2)))
+    cat("\n")
+    cat("Vyberový rozptyl: ") ; cat(var(x))
+    cat("\n")
+    cat("Výberová smerodajná odchýlka (odmocnina z výberového rozptylu: ") ; cat(sqrt(var(x)))
+    cat("\n")
+    cat("Variačný koeficient: ") ; cat(1/mean(x) * sqrt(1/length(x) * sum ((x-mean(x))^2))) ; cat(", t.j. ",100/mean(x) * sqrt(1/length(x) * sum ((x-mean(x))^2)),"%")
+    cat("\n")
+    cat("Pearsonová miera šikmosti (S_p =  [priemer - modus] / s): " ) ; cat( (mean(x) - sort(unique(x))[which.max(table(x))]) / sqrt(1/length(x) * sum ((x-mean(x))^2)))
+    cat("\n")
+    cat("Kvartilová miera šikmosti (S_Q): ") ; cat((kvartily(x, Q = "Q3") + kvartily(x, Q = "Q1") - 2 * median(x)) / ((kvartily(x, Q = "Q3") - kvartily(x, Q = "Q1"))) )
+    cat("\n")
+    cat("Koeficient šikmosti: ") ; cat( 1 / (sqrt(1/length(x) * sum ((x-mean(x))^2)))^3 * mean((x - mean(x))^3) )
+    cat("\n")
+    cat("Koeficient špicatosti: ") ; cat( 1 / (sqrt(1/length(x) * sum ((x-mean(x))^2)))^4 * mean((x - mean(x))^4) - 3)
+    cat("3. centrálny moment: ") ; cat(sum((x-mean(x))^3) / length(x))
+    cat("4. centrálny moment: ") ; cat(sum((x-mean(x))^4) / length(x))
+    cat("Koeficient šikmosti s vyberovou sd ") ;  cat(sum((x-mean(x))^3) / length(x) / sd(x)^3)
+    cat("Koeficient špicatosti s vyberovou sd") ; cat(sum((x-mean(x))^4) / length(x) / sd(x)^4 )
+
+}
