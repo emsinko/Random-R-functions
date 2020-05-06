@@ -65,6 +65,6 @@ popisna_statistika <- function(x, n_i = NULL) {
     cat("3. centrálny moment: ") ; cat(sum((x-mean(x))^3) / length(x))
     cat("4. centrálny moment: ") ; cat(sum((x-mean(x))^4) / length(x))
     cat("Koeficient šikmosti s vyberovou sd ") ;  cat(sum((x-mean(x))^3) / length(x) / sd(x)^3)
-    cat("Koeficient špicatosti s vyberovou sd") ; cat(sum((x-mean(x))^4) / length(x) / sd(x)^4 )
+    cat("Koeficient špicatosti s vyberovou sd") ; cat(sum((x-mean(x))^4) / length(x) / sd(x)^4 - 3)
 
 }
