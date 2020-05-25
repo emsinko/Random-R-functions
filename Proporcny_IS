@@ -1,0 +1,28 @@
+prop.test(x = 108, n = 193)
+
+
+x <- 108
+n <- 193
+alpha <- 0.05
+
+
+p <- x/n
+
+p + c(-1,1) * qnorm(1-alpha/2) * sqrt(p*(1-p)/n)
+9*var(x) / 35
+
+
+
+
+prop.test(x = 924, n = 1250)
+
+
+x <- 924
+n <- 1250
+alpha <- 0.05
+
+
+p <- x/n
+
+# Kontrola ci n*p a n*(1-p) > 5
+p + c(-1,1) * qnorm(1-alpha/2) * sqrt(p*(1-p)/n)
