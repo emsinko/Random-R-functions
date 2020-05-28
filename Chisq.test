@@ -44,3 +44,9 @@ test$statistic
 
 sqrt(X2 / (X2 + sum(tab)))                # Pearsonov koeficient kontingencue
 sqrt(X2 / (sum(tab) * min(dim(tab) - 1))) # Cramerov koeficient
+
+
+library(DescTools)
+
+CramerV(tab)
+ContCoef(tab)
