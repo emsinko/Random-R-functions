@@ -1,0 +1,46 @@
+
+## Pearsonov test nezávislosti
+
+tab <- matrix(c(561, 15, 265, 126), ncol = 2, byrow = TRUE)
+tab
+
+# 2x2 tabulka s korekciou
+chisq.test(tab)
+
+# Vypocet X2 je v tom pripade podla vzorca: n*(|n11*n22 - n12 * n21| - n/2)^2 / (n1. * n2. * n.1 * n.2)
+(sum(tab) * (abs(prod(diag(tab)) - tab[2,1] * tab[1,2]) - sum(tab)/2)^2 ) / (prod(rowSums(tab)) * prod(colSums(tab)))
+
+
+#Kendallov koeficient - (-1, 1)
+(prod(diag(tab)) - tab[2,1] * tab[1,2]) / sqrt((prod(rowSums(tab)) * prod(colSums(tab))))
+
+
+# 2x2 tabulka s klasickym vzorcom: sum( (O-E)^2 / E)
+chisq.test(tab,correct = FALSE)
+
+
+# nxm tabulka:
+
+tab <- matrix(c(
+56,	42,	37,
+64,	59,	95,
+38,	42,	67
+), ncol = 3, byrow = TRUE)
+
+test <- chisq.test(tab) # ak je to viac ako 2x2 tak sa uz nepouziva correct = TRUE
+test
+
+test$observed
+test$expected
+
+(test$observed - test$expected)^2 / (test$expected)
+
+X2 <- sum((test$observed - test$expected)^2 / (test$expected))
+X2
+test$statistic
+
+
+# Koeficienty kontingencie
+
+sqrt(X2 / (X2 + sum(tab)))                # Pearsonov koeficient kontingencue
+sqrt(X2 / (sum(tab) * min(dim(tab) - 1))) # Cramerov koeficient
