@@ -1,0 +1,383 @@
+p <- 60 / 1000
+q <- 1 - p
+alpha <- 0.05
+n <- 1000
+
+p + c(-1,1) * qnorm(1-alpha/2) * sqrt(p*q/n)
+
+
+
+###########
+Ten priklad s Adamom a vysledky testov:
+  
+  Ak by sme predpokladali, ze body z testov sa riadia normalnym rozdelenim tak v pripade politologie:
+  
+  P( (67 - 70)/5 < X) = P(-0,6 < X) = 0,27425 , pričom X je nahodna premenna s normalnym rozdelenim. To by znamenalo, ze Adam bol lepsi ako 27,42 % studentov.
+
+V druhom pripade: 
+  
+  P((55-62)/9.8 < X) = P(-0,7142 < X) = 0.2375253 , t.j. Adam je lepsi v druhom teste len od 23,75% studentov. 
+
+V pripade predpokladu normlaneho rozdelenia vysledkov mozeme tvrdit ze Adam bol uspesnejssi v prvom teste (politologia)
+
+############
+
+x <- c(16, 19, 23, 19, 20, 31, 25, 16, 21, 23)
+
+
+length(x)
+sort(x)
+
+Zoradime si najskor udaje: 16, 16, 19, 19, 20, 21, 23, 23, 25, 31
+
+n = 10 (mame 10 udajov)
+
+
+RQ1 = (10 + 1)/4 = 2.75. Prvy kvartil dostaneme tak, ze spocitame Q1 = 0.25 * x2 + 0.75 * x3 =  0.25 * 16 + 0.75 * 19 = 18.25
+
+RQ2 = (10 + 1)/2 = 5.5. Druhy kvartil = median,  dostaneme tak, ze urobíme priemer 5. tej a 6.hodnoty= Q2 = med = (x5+x6)/2 = (20+21)/2 = 20.5
+
+RQ3 = 3*(10 + 1)/4 = 8.25. Treti kvartil dostaneme tak, ze spocitame 31 = 0.75 * x8 + 0.25 * x9 =  0.75 * 23 + 0.25 * 25 = 23.5
+
+
+IQR = Q3-Q1 = 23.5 - 18.25 = 5.25
+
+
+Odpovede: Q1 = 18.25,  Q2 = 20.5, Q3 = 23.5, IQR = 5.25
+
+############
+
+Najskor si urcime ktora premenna je zavisla (y) a ktora nezavisla (x)
+
+Viac dava zmysel, ze vaha je zavisla od vysky ako naopak.
+Teda budeme predpokladat ze y = vaha a x = vyska
+
+Korelacny koeficient r=0,671 znamena, ze medzi premennymi je stredne silna pozitivna zavislost.
+Inak povedane, ak rastie jedna premenna, tak raste aj druha (priama zavislost)
+
+Odhadnuta regresna priamka ma tvar:
+  
+  y = -64.1 + 0.733 * x  
+
+hmotnost = -64.1 + 0.733 * x 
+
+Student s vyskou x = 167 ma teda: 
+  
+  hmotnost = -64.1 + 0.733 * 167 = 58.311 kg
+
+Vysvetlenie clenov:
+  konstatnta = -64.1, prienik s osou y. Udava odhadnutu hmotonost v pripade ze je vyska = 0 cm
+regresny koeficient = 0,733 znamena, ze zvysovanim vysky o 1cm sa nam zvysuje vaha cloveka o 0,733 kg-
+  
+  ############
+
+x <- c(16.4, 10.5, 19.6, 18.6, 15.4, 18.9, 20.2, 12.5, 10.1, 11.6, 10.6, 14.5, 16.0, 14.3)
+
+stem(x)
+
+sort(x)
+
+10 | 1, 5, 6, 
+11 | 6
+12 | 5
+14 | 3, 5
+15 | 4
+16 | 0, 4
+18 | 6
+18 | 9
+19 | 6
+20 | 2
+
+kod: 10 | 1 = 10.1 
+###########
+
+n = 36
+xp = 162.97 (xp = priemer)
+s = 158.27
+
+Kedze mame n = 36 > 30 pouzijeme normalne rozdelenie. Podla spravnosti by to malo byt studentovo rozdelenie s 36-1 stupnami volnosti
+
+99.5 % kvantil normovaneho normalneho rozdelenia je priblizne 2.5758. 
+
+99% interval spolahlivosti pre strednu hodnotu (mu):
+  
+  mu = xp +- z_99.5 *  s / sqrt(n)
+mu = 162.97 +-  2.5758 * 158.27 / 6
+
+99 interval spolahlivosti je: (95.02469,   230.91531) co ked zaokruhlime tak je (95, 231)
+
+162.97 + c(-1,1)*  2.5758 * 158.27 / 6
+
+###########
+
+priemer populacie = mu = 102
+smedodajna odchylka populacie = sigma = 8,5
+x - nahodna premenna s normalnym rozdelenim N(mu = 102, sigma = 8.5)
+z - normalizovane normalne rozdelenie  z = (x - 102) / 8.5
+
+
+
+Kedze chceme hornych 5 % rozdelenia, potrebujeme najst 95 % kvantil normalneho rozdelena N(0,1) = z_95 = 1.644 (priblizne)
+
+Z toho odvodime   x_95 = z_95 * 8.5 + 102. Dosadime do vzorca: 
+  
+  x_95 = 1.644 * 8.5 + 102 = 115,974
+
+Odpoved: 115,974
+
+
+#######
+qnorm(0.95)
+
+
+X je normalne rozdelna  N(stredna hodnota = 8, standardna odchylka = 10)
+
+Hladame P(X > 25). Najskor si to  znormalizujeme (odpocitame strednu hodnotu a vydelime standardnou odchylkou). 
+
+Z = (X-8)/10 sa riadi normalnym rozdelenim N(0,1)
+
+
+P( Z > (25-8)/10 ) = P(Z > 1,7) = 1 - P(Z <= 1,7) = 0.04456546
+
+Odpoved: S pravdepodobnostou 0,044565 = 4,4565% sa to stane
+
+1 - pnorm(25, mean = 8, sd= 10)
+
+
+
+
+
+
+H0: Priemerna dlzka hospitalizacie je mensia alebo rovna ako 15 dni.
+H1: Priemerna dlzka hospitalizacie je vacsia ako 15 dni.
+
+Kedze pozname standardnu odchylku populacie, nemusime ju odhadnut. Pouzjeme teda Normalne rozdelenie. 
+
+Z = (priemer-stredna hodnota v H0) / standardna odchylka * odmocnina(pocet pacientov)
+Z = (11.4 - 15)/3.6 * sqrt(50)
+Z = -7.071
+
+H0 zamietame, ak je Z vacsie ako 95% kvantil normalneho rozdelenia
+Kriticka hodnotou je teda  priblizne 1,644. 
+
+Pvalue je rovne takmer 1 
+
+Testova statistika je vyrazne mensia ako kriticka hodnota a teda hypotezu H0 nezamietame. 
+Mozeme predpokladat na hladine vyznamnosti 5%, ze priemerna doba je mensia ako 15 dni
+
+
+1 - pnorm((11.4 - 15)/3.6 * sqrt(50))
+
+
+
+
+H0: Priemerna dlzka hospitalizacie je vacsa alebo rovna ako 15 dni.
+H1: Priemerna dlzka hospitalizacie je mensie ako 15 dni.
+
+Kedze pozname standardnu odchylku populacie, nemusime ju odhadnut. Pouzjeme teda Normalne rozdelenie. 
+
+Z = (priemer-stredna hodnota v H0) / standardna odchylka * odmocnina(pocet pacientov)
+Z = (11.4 - 15)/3.6 * sqrt(50)
+Z = -7.071
+
+H0 zamietame, ak je Z mensie ako 5% kvantil normalneho rozdelenia
+Kriticka hodnotou je teda  priblizne -1,644. 
+
+Pvalue je takmer 0, vyrazne mensie ako 5% 
+
+Testova statistika je vyrazne mensia ako kriticka hodnota a teda hypotezu H0 zamietam a prijimame H1 
+Mozeme predpokladat na hladine vyznamnosti 5%, ze priemerna doba je mensia ako 15 dni
+
+
+
+###
+
+x <- c(3,4,8,11,12,15,15,3,7,10,12,15)
+
+median(x)
+length(x)
+sort(x)
+
+Zoradime si najskor udaje: 3,3,4,7,8, 10, 11, 12, 12, 15, 15, 15
+
+n = 12 (mame 12 udajov)
+
+
+RQ1 = (12 + 1)/4 = 3.25. Prvy kvartil dostaneme tak, ze spocitame Q1 = 0.75 * x3  + 0.25 * x4 + =  0.75 * 4  + 0.25 * 7 = 4.75
+
+RQ2 = (12 + 1)/2 = 6.5. Druhy kvartil = median,  dostaneme tak, ze urobíme priemer 6. tej a 7.hodnoty= Q2 = med = (x6+x7)/2 = (10+11)/2 = 10.5
+
+RQ3 = 3*(12 + 1)/4 = 9.75. Treti kvartil dostaneme tak, ze spocitame 0.25 * x9 + 0.75 * x10 =  0.25 * 12 + 0.75 * 15 = 14.25
+
+
+IQR = Q3-Q1 = 14.25 - 4.75 = 9.5
+
+
+Odpovede: Q1 = 4.75,  Q2 = 10.5, Q3 = 14.25, IQR = 9.5
+
+
+########################
+
+n = 4
+xp = 426 (xp = priemer)
+s = 42.5
+
+Predpokladame normalne rozdelenie. Ak by sme nepredpokladali, pouzili by sme  studentovo rozdelenie s 4-1 = 3 stupnami volnosti
+Predpokladame ze xp ~ N(mu = 426, s = 42.5 / sqrt(4)). Spravime normalizaciu udajov, z = (x-426)/(42.5/2)= (x-426)/21.25
+
+
+P(400 <= xp <= 500) = P(  (400 - 426)/21.25  <= z <= (500 - 426)/21.25 )
+
+= P(-1.22352 <= z <= 3.4823) = 0.9997 - 0.1105 = 0.8892
+
+Odpoved: Pravdepodobnost, ze priemer je medzi 400 a 500 je 0.88918 = 88,92 %
+
+pnorm(3.4823)
+pnorm(-1.22352)
+
+
+pnorm(500, mean = 426, sd = 42.5/2) - pnorm(400, mean = 426, sd = 42.5/2)
+
+
+
+99.5 % kvantil normovaneho normalneho rozdelenia je priblizne 2.5758. 
+
+99% interval spolahlivosti pre strednu hodnotu (mu):
+  
+  mu = xp +- z_99.5 *  s / sqrt(n)
+mu = 162.97 +-  2.5758 * 158.27 / 6
+
+99 interval spolahlivosti je: (95.02469,   230.91531) co ked zaokruhlime tak je (95, 231)
+
+162.97 + c(-1,1)*  2.5758 * 158.27 / 6
+
+
+####
+
+n = 32
+xp = 52.7 (xp = priemer)
+s = 16.5
+alpha = 5% --> 1-alhpa/2 = 0.975 = 97.5% 
+Predpokladame normalne rozdelenie. 
+
+97.5 % kvantil normovaneho normalneho rozdelenia je priblizne 1.96. 
+
+
+95% interval spolahlivosti pre strednu hodnotu (mu):
+  
+mu = xp +- z_97.5 *  s / sqrt(n)
+mu = 52.7 +-  1.96 * 16.5 / sqrt(32)
+
+95% interval spolahlivosti je: (46.98304, 58.41696) co ked zaokruhlime tak je (46,983  az 58,417)
+
+162.97 + c(-1,1)*  2.5758 * 158.27 / 6
+
+52.7 + c(-1,1)*  1.96 * 16.5 / sqrt(32)
+
+
+
+#################################
+
+
+n = 4
+xp = 426 (xp = priemer)
+s = 42.5
+
+Predpokladame normalne rozdelenie. Ak by sme nepredpokladali, pouzili by sme  studentovo rozdelenie s 4-1 = 3 stupnami volnosti
+Predpokladame ze xp ~ N(mu = 426, s = 42.5 / sqrt(4)). Spravime normalizaciu udajov, z = (x-426)/(42.5/2)= (x-426)/21.25
+
+
+P(400 <= xp <= 500) = P(  (400 - 426)/21.25  <= z <= (500 - 426)/21.25 )
+
+= P(-1.22352 <= z <= 3.4823) = 0.9997 - 0.1105 = 0.8892
+
+Odpoved: Pravdepodobnost, ze priemer je medzi 400 a 500 je 0.88918 = 88,92 %
+
+
+#####################
+
+#10
+
+x <- c(6,10,3,9,1,10,4,5,1,5,6,6)
+
+median(x)
+length(x)
+sort(x)
+
+Zoradime si udaje: 1,  1,  3,  4,  5,  5,  6,  6,  6,  9, 10, 10
+
+n = 12 
+
+RQ1 = (12 + 1)/4 = 3.25. Prvy kvartil dostaneme tak, ze spocitame Q1 = 0.75 * x3  + 0.25 * x4 + =  0.75 * 3  + 0.25 * 4 = 3.25
+
+RQ2 = (12 + 1)/2 = 6.5. Druhy kvartil = median,  dostaneme tak, ze urobíme priemer 6. tej a 7.hodnoty= Q2 = med = (x6+x7)/2 = (5+6)/2 = 5.5
+
+RQ3 = 3*(12 + 1)/4 = 9.75. Treti kvartil dostaneme tak, ze spocitame 0.25 * x9 + 0.75 * x10 =  0.25 * 6 + 0.75 * 9 = 8.25
+
+
+IQR = Q3-Q1 = 8.25 - 3.25 = 5
+
+
+Odpovede: Q1 = 3.25,  Q2 = 5.5, Q3 = 8.25, IQR = 5
+
+
+
+########################
+
+n = 1006
+xp = 13.4 (xp = priemer)
+s = 16.6
+
+Predpokladame normalne rozdelenie.
+Predpokladame ze xp ~ N(mu = 13.4, s = 16.6 / sqrt(1006)). 
+
+99.5 % kvantil normovaneho normalneho rozdelenia je priblizne 2.5758. 
+
+99% interval spolahlivosti pre strednu hodnotu (mu):
+  
+mu = xp +- z_99.5 *  s / sqrt(n)
+mu = 13.4 +-  2.5758 * 16.6 / sqrt(1006)
+
+99 %interval spolahlivosti je: (12.0519,  14.7481). 
+
+
+
+13.4 + c(-1,1)*  2.5758 * 16.6 / sqrt(1006)
+
+
+
+
+pnorm(3.4823)
+pnorm(-1.22352)
+
+
+pnorm(500, mean = 426, sd = 42.5/2) - pnorm(400, mean = 426, sd = 42.5/2)
+
+
+
+
+
+
+####
+
+Zoradene udaje: 714,728,731,752,759,774,774,791,792,816,829,832,837,838,839,856,859,860,882,908
+
+Min = 714
+Max = 908
+rozpatia = 194  (mozeme zaokruhlit na 200)
+sirka intervalu = 25
+pocet intervalov = 200 / 25 = 8
+
+Prvy interval zacne 710
+
+spodna 	vrchna	pocetnost	kumulativna pocetnost
+710	735	3	3
+735	760	2	5
+760	785	2	7
+785	810	2	9
+810	835	3	12
+835	860	5	17
+860	885	2	19
+885	910	1	20
+
+
