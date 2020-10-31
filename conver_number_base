@@ -1,0 +1,71 @@
+
+
+convert_to_decimal <- function(x = 111, from_base = 2){
+  digits_str <- unlist(strsplit(as.character(x), ""))
+  digits_str <- gsub("A", 10, gsub("B", 11, gsub("C", 12, gsub("D", 13, gsub("E", 14, gsub("F", 15, digits_str))))))
+  digits <- as.numeric(digits_str)
+  n <- length(digits_str)
+  sum(digits * from_base ^ c((n-1):0))
+}
+
+
+convert_number_base <- function(x = 15, from_base = 10, to_base = 2){
+
+  if(from_base != 10) x <- convert_to_decimal(x = x, from_base = from_base)
+  
+  remainder <- NULL
+  temp <- x
+  while(temp > 0){
+    remainder <- append(remainder, temp %% to_base)
+    temp <- temp %/% to_base
+    
+    }
+    return(paste0(rev(gsub("10", "A", 
+                      gsub("11", "B", 
+                      gsub("12", "C", 
+                      gsub("13", "D", 
+                      gsub("14", "E", 
+                      gsub("15", "F", remainder))))))),collapse = "")
+           )
+  }
+
+
+number <- 60002
+
+convert_number_base(number, from_base = 10, to_base = 3)
+convert_number_base(number, from_base = 10, to_base = 5)
+convert_number_base(number, from_base = 10, to_base = 7)
+convert_number_base(number, from_base = 10, to_base = 11)
+convert_number_base(number, from_base = 10, to_base = 13)
+convert_number_base(number, from_base = 10, to_base = 15)
+
+convert_number_base(210, from_base = 3, to_base = 10)
+convert_number_base(2012, from_base = 3, to_base = 10)
+convert_number_base(12012, from_base = 3, to_base = 10)
+convert_number_base(21201, from_base = 3, to_base = 10)
+convert_number_base(1122012, from_base = 3, to_base = 10)
+convert_number_base(221201, from_base = 3, to_base = 10)
+
+convert_number_base("3A2", from_base = 12, to_base = 10)
+convert_number_base("B16", from_base = 12, to_base = 10)
+convert_number_base("24AB", from_base = 12, to_base = 10)
+convert_number_base("3A7B4", from_base = 12, to_base = 10)
+convert_number_base("B3A14", from_base = 12, to_base = 10)
+convert_number_base("1B5A12", from_base = 12, to_base = 10)
+convert_number_base("673A14", from_base = 12, to_base = 10)
+convert_number_base("1ABBA2", from_base = 12, to_base = 10)
+
+
+convert_number_base(5, from_base = 10, to_base = 2)
+convert_number_base(12, from_base = 10, to_base = 2)
+convert_number_base(34, from_base = 10, to_base = 2)
+convert_number_base(697, from_base = 10, to_base = 2)
+convert_number_base(512, from_base = 10, to_base = 2)
+
+convert_number_base(11100, from_base = 2, to_base = 16)
+convert_number_base(101011, from_base = 2, to_base = 16)
+convert_number_base(1101001, from_base = 2, to_base = 16)
+convert_number_base(11011010, from_base = 2, to_base = 16)
+convert_number_base(101011111, from_base = 2, to_base = 16)
+convert_number_base(1111011111, from_base = 2, to_base = 16)
+
