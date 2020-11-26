@@ -1,0 +1,195 @@
+# problem 3
+
+#load the data
+# install.packages("openintro")
+library(openintro)
+data(resume)
+
+
+columns_to_use <- c("received_callback", "job_industry", "military", "job_city", "race", "gender", "college_degree", "years_experience", "resume_quality")
+data <- resume[ ,columns_to_use]
+data
+
+
+# a) Use a modeling approach to investigate the main question of interest: do these data suggest
+# that race and/or gender affects the probability of getting a callback?
+
+library(tidyverse)
+
+#####
+## Some statistics
+
+data %>%
+  group_by(race) %>%
+  summarise(
+    callback_rate = mean(received_callback),
+    callback_count = sum(received_callback),
+    resumes = n())
+
+# Black = 6,45%  vs. White = 9,65%
+
+data %>%
+  group_by(gender) %>%
+  summarise(
+    callback_rate = mean(received_callback),
+    callback_count = sum(received_callback),
+    resumes = n())
+
+# Female = 8,25%  vs. Male = 7,38%
+
+data %>%
+  group_by(race,gender) %>%
+  summarise(
+    callback_rate = mean(received_callback),
+    callback_count = sum(received_callback),
+    resumes = n())
+
+# Black males - lowest (5,83%)  vs. White females - highest (9,89%)
+
+####
+# Modelling - we will use logistic regression
+
+### Model only with gender:
+summary(glm(received_callback ~ gender, family = "binomial", data = data))
+
+# Pri tomto modeli sa nepreukazal signifikantny rozdiel. 
+# Muzi maju podla modelu o nieco mensiu sancu (zaporny koeficient -0.12), avsak koeficient nie je signifikantne odlisny od 0
+
+
+### Model only with race:
+summary(glm(received_callback ~ race, family = "binomial", data = data))
+
+# Pri tomto modeli sa preukazal signifikantny rozdiel. 
+# Biela rasa ma podla modelu signifikantne vacsiu sancu (kladny koeficient 0.0438), a koeficient je signifikantne odlisny od 0
+
+# ln(p/(1-p)) = b0 + b1*x
+# ln(p/(1-p)) = intercept + racewhite
+# p/(1-p) = exp(intercept + racewhite)
+# ODDS = exp(intercept + racewhite)
+
+# Biela rasa ma  exp(0.43818) = 1.549 krat vacsie sance (ODDS) 
+
+### Model only with gender and race + interaction:
+summary(glm(received_callback ~ gender * race, family = "binomial", data = data))
+
+# Opat iba rasa vysla signifikatna, avsak v ramci rasy uz rozdiel medzi muzom a zenou nebol signifikantne odlisny
+
+
+### Model with all variables
+summary(glm(received_callback ~ ., family = "binomial", data = data))
+
+# Na potvrdenie, ci ma rasa efekt aj pri zapocitani vsetkych premennych. Odpoved: ano ma!, koeficient race_white vysiel pozitivny a je signifikantny 
+
+
+# Zaver po a) Signifikantne rozdiely sa preukazali v rasovej premennej. Biela rasa mala vacsiu sancu (priblzne 1.549 krat) na callback. 
+#             Premenna race ma efekt na callback. Gender nema signifikantny efekt
+
+
+
+
+####
+# b) Investigate whether the full model (i.e., the model with all possible predictors) is a reasonable
+# predictive model for classifying resumes as either receiving or not receiving a callback.
+# Summarize your findings.
+
+# Nejaky priklad na  vyhodnotenie modelov
+#https://www.r-bloggers.com/2015/08/evaluating-logistic-regression-models/
+
+model_full <- glm(received_callback ~ ., family = "binomial", data = data)
+summary(model_full)
+model_full
+
+# Predictions
+pred <- predict(model_full, type = "response")
+
+# Histogram for predicted probabilities for callback
+hist(pred, xlab = "predictions", main = "")
+abline(v = mean(pred), col = "red", lty = 2, lwd = 3)
+
+pred_class <- ifelse(pred < mean(pred), 0, 1)
+real_class <- data$received_callback
+confusion_matrix <- table(real_class, pred_class)
+accuracy <- (confusion_matrix[1,1] + confusion_matrix[2,2]) / sum(confusion_matrix)
+
+library(pROC)
+#par(pty="s") 
+lrROC <- roc(real_class ~ pred,
+             plot=TRUE,
+             print.auc=TRUE,
+             col="green",
+             lwd =4,
+             legacy.axes=TRUE,
+             main="ROC Curves")
+#legend("bottomright",legend=c("Logistic Regression"),col=c("green"),lwd=4)
+
+# AUC je metrika na vyhodnotenie klasifikatora (schopnost spravne klasifikovat ci bude/nebude callback)
+# AUC nadobuda hodnoty medzi 0.5 (nahodny klasifikator) az 1 (presny klasifikator)
+# AUC = 0.622 naznacuje, ze model nie je moc dobry (poor) a nema velmi dobru predikcnu silu
+
+
+## PSEUDO R squared
+
+# Unlike linear regression with ordinary least squares estimation, there is no R2 statistic 
+# which explains the proportion of variance in the dependent variable that is explained by 
+# the predictors. However, there are a number of pseudo R2 metrics that could be of value. 
+# Most notable is McFadden’s R2, which is defined as 1−[ln(LM)/ln(L0)] where ln(LM) is the log 
+# likelihood value for the fitted model and ln(L0) is the log likelihood for the null model with 
+# only an intercept as a predictor. The measure ranges from 0 to just under 1, with values closer 
+# to zero indicating that the model has no predictive power.
+
+#install.packages("pscl")
+library(pscl)
+pR2(model_full)["McFadden"]  # pseudolook for 'McFadden' = 0.02252779, poor predictive power
+
+
+###########
+## Zobrazenie distribucie predikovanych pravdepodobnosti v zavislosti ci bol/nebol callback 
+data.frame(real_class, pred) %>%
+  ggplot(aes(x = pred, fill = factor(real_class))) + 
+    geom_density(alpha = 0.3) + 
+    theme_bw() + 
+    labs(x = "Predict", colour = "Real", fill = "Callback") + 
+    ggtitle("Distribution graph")
+
+# Distribucie sa prilis prekryvaju -> model nema dostatocnu silu predikovat callback na zaklade predikcii
+
+
+# So zvysujucou predikovanou pravdepodobnostou by mal podiel modrej farby narastat. Tento trend vsak nie je moc pekny na tomto obrazku co opat naznacuje slabu silu modelu
+
+data.frame(real_class, pred) %>%
+  ggplot(aes(x = pred, fill = factor(real_class))) + 
+  geom_histogram(alpha = 1, position = "fill", colour = "black",binwidth = 0.02) +
+  theme_bw() + 
+  labs(x = "Predicted vs Real", y = "Value", fill = "Callback") 
+
+# Záver, model nema velku predikčnú silu
+
+
+
+###########
+## PROBLEM 4
+############
+
+library(MASS)
+data("Boston")
+
+?Boston
+
+head(Boston)
+colnames(Boston)
+c("crim","zn","indus","chas","nox","rm","age","dis","rad", "tax", "ptratio", "black","lstat","medv")
+
+c("crim", "chas","rm","age","dis","rad", "tax", "ptratio", "black","lstat","medv")
+
+Model 1: a single-predictor model with medv
+summary(lm(crim ~ medv, data = Boston))
+
+
+Model 2: all variables except zn, indus, and nox
+summary(lm(crim ~ chas + rm + age + dis + rad + tax + ptratio + black + lstat + medv, data = Boston))
+  
+
+– Model 3: all variables except lstat, rm, and chas
+– Model 4: all variables
+– Model 5: all variables, including an interaction term between chas and lstat and an interaction
+term between chas and rad
