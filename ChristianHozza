@@ -111,6 +111,7 @@ real_class <- data$received_callback
 confusion_matrix <- table(real_class, pred_class)
 accuracy <- (confusion_matrix[1,1] + confusion_matrix[2,2]) / sum(confusion_matrix)
 
+#install.packages("pROC)
 library(pROC)
 #par(pty="s") 
 lrROC <- roc(real_class ~ pred,
@@ -122,6 +123,8 @@ lrROC <- roc(real_class ~ pred,
              main="ROC Curves")
 #legend("bottomright",legend=c("Logistic Regression"),col=c("green"),lwd=4)
 
+
+
 # AUC je metrika na vyhodnotenie klasifikatora (schopnost spravne klasifikovat ci bude/nebude callback)
 # AUC nadobuda hodnoty medzi 0.5 (nahodny klasifikator) az 1 (presny klasifikator)
 # AUC = 0.622 naznacuje, ze model nie je moc dobry (poor) a nema velmi dobru predikcnu silu
@@ -132,7 +135,7 @@ lrROC <- roc(real_class ~ pred,
 # Unlike linear regression with ordinary least squares estimation, there is no R2 statistic 
 # which explains the proportion of variance in the dependent variable that is explained by 
 # the predictors. However, there are a number of pseudo R2 metrics that could be of value. 
-# Most notable is McFadden’s R2, which is defined as 1−[ln(LM)/ln(L0)] where ln(LM) is the log 
+# Most notable is McFaddenâ€™s R2, which is defined as 1â’[ln(LM)/ln(L0)] where ln(LM) is the log 
 # likelihood value for the fitted model and ln(L0) is the log likelihood for the null model with 
 # only an intercept as a predictor. The measure ranges from 0 to just under 1, with values closer 
 # to zero indicating that the model has no predictive power.
@@ -146,10 +149,10 @@ pR2(model_full)["McFadden"]  # pseudolook for 'McFadden' = 0.02252779, poor pred
 ## Zobrazenie distribucie predikovanych pravdepodobnosti v zavislosti ci bol/nebol callback 
 data.frame(real_class, pred) %>%
   ggplot(aes(x = pred, fill = factor(real_class))) + 
-    geom_density(alpha = 0.3) + 
-    theme_bw() + 
-    labs(x = "Predict", colour = "Real", fill = "Callback") + 
-    ggtitle("Distribution graph")
+  geom_density(alpha = 0.3) + 
+  theme_bw() + 
+  labs(x = "Predict", colour = "Real", fill = "Callback") + 
+  ggtitle("Distribution graph")
 
 # Distribucie sa prilis prekryvaju -> model nema dostatocnu silu predikovat callback na zaklade predikcii
 
@@ -162,7 +165,7 @@ data.frame(real_class, pred) %>%
   theme_bw() + 
   labs(x = "Predicted vs Real", y = "Value", fill = "Callback") 
 
-# Záver, model nema velku predikčnú silu
+# Zaver, model nema velku predikcnu silu
 
 
 
@@ -171,25 +174,307 @@ data.frame(real_class, pred) %>%
 ############
 
 library(MASS)
+library(tidyverse)
+
+
 data("Boston")
 
 ?Boston
 
 head(Boston)
-colnames(Boston)
-c("crim","zn","indus","chas","nox","rm","age","dis","rad", "tax", "ptratio", "black","lstat","medv")
+paste(colnames(Boston),collapse = " + ")
 
-c("crim", "chas","rm","age","dis","rad", "tax", "ptratio", "black","lstat","medv")
+data <- Boston
+data["target"] <- ifelse(data$crim < median(data$crim), 0, 1)
+data <- dplyr::select(data, -crim)
 
-Model 1: a single-predictor model with medv
-summary(lm(crim ~ medv, data = Boston))
+model_1 <- glm(target ~ medv, data = data, family = "binomial")
+model_2 <- glm(target ~ chas + rm + age + dis + rad + tax + ptratio + black + lstat + medv, data = data, family = "binomial")
+model_3 <- glm(target ~ zn + indus + nox + age + dis + rad + tax + ptratio + black + medv, data = data, family = "binomial")
+model_4 <- glm(target ~ ., data = data, family = "binomial")
+model_5 <- glm(target ~ zn + indus  + nox + rm + age + dis + chas + rad + tax + ptratio + black + lstat + medv +
+                 chas:rad + chas:lstat, data = data, family = "binomial")
+
+summary(model_1)
+summary(model_2)
+summary(model_3)
+summary(model_4)
+summary(model_5)
+
+# Model 3,4 
+
+# Predictions
+pred_1 <- predict(model_1, type = "response")
+pred_2 <- predict(model_2, type = "response")
+pred_3 <- predict(model_3, type = "response")
+pred_4 <- predict(model_4, type = "response")
+pred_5 <- predict(model_5, type = "response")
+
+#install.packages("pROC)
+library(pROC)
+library(tidyverse)
+
+par(pty="s") 
+lrROC <- roc(data$target ~ pred_1,
+             plot=TRUE,
+             print.auc=TRUE,
+             col="green",
+             lwd =3,
+             legacy.axes=TRUE,
+             print.auc.x = 0.3,
+             print.auc.y = 0.80,
+             main="ROC Curves")
+
+roc(data$target, pred_2, col="blue",print.auc.y = 0.72, print.auc.x = 0.3,
+    plot = TRUE,add = TRUE, print.auc=TRUE, lwd =3)
+
+roc(data$target, pred_3, col="red",print.auc.y = 0.64, print.auc.x = 0.3,
+    plot = TRUE,add = TRUE, print.auc=TRUE, lwd =3)
+
+roc(data$target, pred_4, col="brown",print.auc.y = 0.56, print.auc.x = 0.3,
+    plot = TRUE,add = TRUE, print.auc=TRUE, lwd =3)
+
+roc(data$target, pred_5,col="orange",print.auc.y = 0.48, print.auc.x = 0.3
+    ,
+    plot = TRUE,add = TRUE, print.auc=TRUE, lwd =3)
+
+legend("bottomright", legend = c("model 1", "model 2", "model 3", "model 4", "model 5"),
+       col = c("green", "blue","red","brown", "orange"), lwd = 3, cex = 0.6)
+
+par(pty="m")
+
+# Models 3,4,5 have higher predictive power (higher AUC)
 
 
-Model 2: all variables except zn, indus, and nox
-summary(lm(crim ~ chas + rm + age + dis + rad + tax + ptratio + black + lstat + medv, data = Boston))
-  
+#########
+## Distribution of predictions for target = 0 / 1
+## Zobrazenie distribucie predikovanych pravdepodobnosti v zavislosti ci bol/nebol callback 
 
-– Model 3: all variables except lstat, rm, and chas
-– Model 4: all variables
-– Model 5: all variables, including an interaction term between chas and lstat and an interaction
-term between chas and rad
+#install.packages("patchwork")
+library(patchwork)
+
+p3 <- 
+data.frame(real = data$target, pred = pred_3) %>%
+  ggplot(aes(x = pred, fill = factor(real))) + 
+  geom_density(alpha = 0.4) + 
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  labs(x = "Predict", colour = "Real", fill = "Crim > median") + 
+  ggtitle("Distribution - model 3")
+
+p4 <- 
+data.frame(real = data$target, pred = pred_4) %>%
+  ggplot(aes(x = pred, fill = factor(real))) + 
+  geom_density(alpha = 0.4) + 
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  labs(x = "Predict", colour = "Real", fill = "Crim > median") + 
+  ggtitle("Distribution - model 4")
+
+p5 <- 
+data.frame(real = data$target, pred = pred_5) %>%
+  ggplot(aes(x = pred, fill = factor(real))) + 
+  geom_density(alpha = 0.4) + 
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  labs(x = "Predict", colour = "Real", fill = "Crim > median") + 
+  ggtitle("Distribution - model 5")
+
+p3 + p4 + p5 
+
+
+# Distribucie su velmi podobne
+
+# So zvysujucou predikovanou pravdepodobnostou by mal podiel modrej farby narastat. Tento trend vsak nie je moc pekny na tomto obrazku co opat naznacuje slabu silu modelu
+
+p3 <- 
+data.frame(real = data$target, pred = pred_3) %>%
+  ggplot(aes(x = pred, fill = factor(real))) + 
+  geom_histogram(alpha = 1, position = "fill", colour = "black",binwidth = 0.1) +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  labs(x = "Predicted vs Real", y = "Value", fill = "Crim > median") + 
+  ggtitle("Model n. 3")
+
+p4 <- 
+data.frame(real = data$target, pred = pred_4) %>%
+  ggplot(aes(x = pred, fill = factor(real))) + 
+  geom_histogram(alpha = 1, position = "fill", colour = "black",binwidth = 0.1) +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  labs(x = "Predicted vs Real", y = "Value", fill = "Crim > median") + 
+  ggtitle("Model n. 4")
+
+
+p5 <- 
+data.frame(real = data$target, pred = pred_5) %>%
+  ggplot(aes(x = pred, fill = factor(real))) + 
+  geom_histogram(alpha = 1, position = "fill", colour = "black",binwidth = 0.1) +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  labs(x = "Predicted vs Real", y = "Value", fill = "Crim > median") + 
+  ggtitle("Model n. 5")
+
+
+p3 + p4 + p5 
+
+
+## Z tychto 3 grafov by som zvolil model 3
+
+
+######
+## Compare with anova
+
+anova(model_1, model_2, test ="Chisq") # model_2 is significantly better than model_1 (p-value < 5%)
+anova(model_1, model_3, test ="Chisq") # model_3 is significantly better than model_1 (p-value < 5%)
+anova(model_1, model_4, test ="Chisq") # model_4 is significantly better than model_1 (p-value < 5%)
+anova(model_1, model_5, test ="Chisq") # model_5 is significantly better than model_1 (p-value < 5%)
+
+# Model_1 is definitely the least predictable model 
+
+anova(model_4, model_5, test ="Chisq") # adding interaction terms does not reduce RSS significantly (p-value > 5%)
+anova(model_3, model_5, test ="Chisq") # adding interaction terms + lstat, rm, and chas does not reduce RSS significantly (p-value > 5%)
+anova(model_2, model_5, test ="Chisq") # adding interaction terms + lstat, zn, indus, and nox reduce RSS significantly (p-value < 5%)
+
+# Model 5 is better than model_1, model_2, but it is not significantly better than model_3, model_4
+
+
+anova(model_3, model_4, test ="Chisq") # adding lstat, rm, and chas does not reduce RSS significantly (p-value > 5%)
+# I would choose model 3 over models 4/5
+
+
+## PSEUDO R squared
+
+# Unlike linear regression with ordinary least squares estimation, there is no R2 statistic 
+# which explains the proportion of variance in the dependent variable that is explained by 
+# the predictors. However, there are a number of pseudo R2 metrics that could be of value. 
+# Most notable is McFaddenâ€™s R2, which is defined as 1â’[ln(LM)/ln(L0)] where ln(LM) is the log 
+# likelihood value for the fitted model and ln(L0) is the log likelihood for the null model with 
+# only an intercept as a predictor. The measure ranges from 0 to just under 1, with values closer 
+# to zero indicating that the model has no predictive power.
+
+#install.packages("pscl")
+library(pscl)
+pR2(model_1)["McFadden"]  # pseudolook for 'McFadden' = 0.05272303, poor predictive power
+pR2(model_2)["McFadden"]  # pseudolook for 'McFadden' = 0.5699502 
+pR2(model_3)["McFadden"]  # pseudolook for 'McFadden' = 0.6931035 
+pR2(model_4)["McFadden"]  # pseudolook for 'McFadden' = 0.6978794
+pR2(model_5)["McFadden"]  # pseudolook for 'McFadden' = 0.7037582
+
+
+# Záver: 
+# Porovnanim cez viacere metody: ROC krivka, pseudo R2, anovou aj pohladom na distribuciu predikovanych pravdepodobnosti by som  zvolil model 3.
+# Modely 4 a 5 nie su vyznamne lepsie ako model 3. 
+
+
+
+
+
+
+
+# Histogram for predicted probabilities for callback
+hist(pred, xlab = "predictions", main = "")
+abline(v = mean(pred), col = "red", lty = 2, lwd = 3)
+
+pred_class <- ifelse(pred < mean(pred), 0, 1)
+real_class <- data$received_callback
+confusion_matrix <- table(real_class, pred_class)
+accuracy <- (confusion_matrix[1,1] + confusion_matrix[2,2]) / sum(confusion_matrix)
+
+
+
+
+
+###
+# Model 1: a single-predictor model with medv
+
+model_1 <- lm(crim ~ medv, data = Boston)
+summary(model_1)
+
+# medv is significant 
+
+####
+# Model 2: all variables except zn, indus, and nox
+
+model_2 <- lm(crim ~ chas + rm + age + dis + rad + tax + ptratio + black + lstat + medv, data = Boston)
+summary(model_2)
+
+# rad and  medv are significant (p-value < 5%)
+
+####
+# Model 3: all variables except lstat, rm, and chas
+model_3 <- lm(crim ~ zn + indus + nox + age + dis + rad + tax + ptratio + black + medv, data = Boston)
+summary(model_3)
+
+
+####
+# Model 4: all variables
+
+model_4 <- lm(crim ~ ., data = Boston)
+summary(model_4)
+
+
+####
+# Model 5: all variables, including an interaction term 
+#          between chas and lstat and an interactionterm between chas and rad
+
+model_5 <- lm(crim ~ zn + indus  + nox + rm + age + dis + chas + rad + tax + ptratio + black + lstat + medv +
+                chas:rad + chas:lstat, data = Boston)
+summary(model_5)
+
+# Interactions between chas and lstat / chas and rad are not significant 
+
+#######
+## Compare Rsquared / Adj R squared 
+##
+
+
+data.frame(Rsquared = unlist(lapply(X = list(model_1,model_2,model_3,model_4,model_5), FUN = function(x) summary(x)$r.squared)),
+           AdjRsquared = unlist(lapply(X = list(model_1,model_2,model_3,model_4,model_5), FUN = function(x) summary(x)$adj.r.squared)),
+           row.names =c("model_1","model_2","model_3","model_4","model_5"))
+
+# Best AdjRsquared = model_5 (all variables with interaction terms)
+# Differences between model_3 / 4 /5  are really small ~ 0.001
+
+######
+## Compare with anova
+
+anova(model_1, model_2) # model_2 is significantly better than model_1 (p-value < 5%)
+anova(model_1, model_3) # model_3 is significantly better than model_1 (p-value < 5%)
+anova(model_1, model_4) # model_4 is significantly better than model_1 (p-value < 5%)
+anova(model_1, model_5) # model_5 is significantly better than model_1 (p-value < 5%)
+
+# Model_1 is definitely the least predictable model 
+
+anova(model_4, model_5) # adding interaction terms does not reduce RSS significantly (p-value > 5%)
+anova(model_3, model_5) # adding interaction terms + lstat, rm, and chas does not reduce RSS significantly (p-value > 5%)
+anova(model_2, model_5) # adding interaction terms + lstat, zn, indus, and noxreduce RSS significantly (p-value < 5%)
+
+# Model 5 is better than model_1, model_2, but it is not significantly better than model_3, model_4
+
+
+anova(model_3, model_4) # adding lstat, rm, and chas does not reduce RSS significantly (p-value > 5%)
+# I would choose model 3 over model 4/5
+
+
+# Now, we should choose between model 2 / model 3
+summary(model_2)
+summary(model_3)
+
+# Model 3 seems to be better option (more significant variables and higher Adj. r squared)
+
+
+model_final <- model_3
+summary(model_final)
+
+# Model assumptions
+hist(residuals(model_final))
+shapiro.test(residuals(model_final)) # Residuals are not normally distributed
+plot(model_final,2) # normally distributed residuals - NOT OK
+
+plot(model_final,1) # line should be straight, there is a little pattern, let's check plot n.3
+plot(model_final,3) # line should be straight, there is positive trend - NOT OK - there is "small" heteroscedasticity 
+
+acf(model_final$residuals) # autocorrelation - there is little autocorrelation
+
+
