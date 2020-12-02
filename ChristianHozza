@@ -344,6 +344,12 @@ summary(model_final)
 
 ### iii) Evaluate the model assumptions for the final model.
 
+shapiro.test(model_final$residuals) # pvalue = 2,72 % -> not normally distributed - NOT OK
+plot(model_final,1) # line should be straight without trend -  OK ! je tam mala zavislost, ale povazujem ju za prijatelnu
+plot(model_final,3) # line should be straight without trend - OK ! je tam mala zavislost, ale povazujem ju za prijatelnu
+acf(model_final$residuals) # no autocorrelation - OK!
+
+# Model nesplna normalitu rezidui - jediny problem
 
 
 ###
@@ -355,13 +361,15 @@ summary(model_final)
 # – Model 2: full model, untransformed pollution measures
 # – Model 3: full model, log-transformed pollution measures
 
-
+glimpse(pollution)
  
 pollution["target"] <- ifelse(pollution$mortality < median(pollution$mortality), 0, 1)
 
+# Z full modelu musime vylucit premennu city a region, nakolko chceme vyuzit model na predikciu mimo USA
+
 model_1 <- glm(target ~ so2_log + nonwhite + rain, data = pollution, family = "binomial")
-model_2 <- glm(target ~ jantemp + rain + educ + nonwhite + whitecollar + housesize + income + hc + so2 + nox + region, data = pollution, family = "binomial")
-model_3 <- glm(target ~ jantemp + rain + educ + nonwhite + whitecollar + housesize + income + hc_log + so2_log + nox_log + region, data = pollution, family = "binomial")
+model_2 <- glm(target ~ jantemp + rain + educ + nonwhite + whitecollar + housesize + income + hc + so2 + nox, data = pollution, family = "binomial")
+model_3 <- glm(target ~ jantemp + rain + educ + nonwhite + whitecollar + housesize + income + hc_log + so2_log + nox_log, data = pollution, family = "binomial")
 
 summary(model_1) # all variables are significant
 summary(model_2)
@@ -389,6 +397,7 @@ lrROC <- roc(pollution$target ~ pred_1,
              print.auc.y = 0.80,
              main="ROC Curves")
 
+
 roc(pollution$target, pred_2, col="blue",print.auc.y = 0.72, print.auc.x = 0.4,
     plot = TRUE,add = TRUE, print.auc=TRUE, lwd =3)
 
@@ -401,7 +410,7 @@ legend("bottomright", legend = c("model 1", "model 2", "model 3"),
 
 par(pty="m")
 
-
+# Model 3 ma podla ROC curve a hodnoty AUC najvyssie predikcnu silu
 
 #########
 ## Distribution of predictions for target = 0 / 1
@@ -439,13 +448,8 @@ p3 <-
 
 p1 + p2 + p3 
 
-# Model 3 nema vhodnu distribuciu predikcii. Vyzera ze sa model prilis preucil a dokaze velmi dobre predikovat target podla ktorych sa ucil.
-#         je dost pravdepodobne, ze v pripade novych pozorovani, by vykonnost vyrazne klesla
+# Distribucie su podobne, Model 3 ma ale najmensi prekryv  
 
-# 
-
-
-# Distribucie su velmi podobne
 
 # So zvysujucou predikovanou pravdepodobnostou by mal podiel modrej farby narastat.
 
@@ -480,7 +484,7 @@ p3 <-
 
 p1 + p2 + p3 
 
-
+# Vsetky  3 modely maju rastuci trend, co je dobre. Cim vyssia predikovana pravdepodobnost, tym vyssi pomer toho, ze target = 1 (umrtnost vyssia ako medianova umrtnost)
 ## PSEUDO R squared
 
 # Unlike linear regression with ordinary least squares estimation, there is no R2 statistic 
@@ -497,6 +501,12 @@ pR2(model_1)["McFadden"]  # pseudolook for 'McFadden' = 0.517,
 pR2(model_2)["McFadden"]  # pseudolook for 'McFadden' = 0.701 
 pR2(model_3)["McFadden"]  # pseudolook for 'McFadden' = 0.799
 
+# Ak by sme si mali vybrat medzi modelmi, urcite pouzit model 3 oproti modelu 2. Ma rovnako vela premennych, avsak ukazala sa lepsia predikcna sila pri viacerych ukazovatleoch
+# Ak by sme chceli jednoduchsi model, urcite treba pouzit model 1, nakolko ma vyrazne mensi pocet premenych a jeho vykonnost je dobra. 
+
+# Kedze vsak mame vela premennych v modeli, je vhodne si vysvotrit  train/test  sample. 
+# Na trenovacej vzorke model naucime a na testovacej vzorke vyhodnotime. 
+# Dovod je taky, aby vybrany model nebol preuceny (overfitted) a dobre vedel predikovat len na datach ktore mal k dispozicii pri uceni
 
 
 #############################################################
@@ -510,9 +520,10 @@ pollution["sample"] <- train_test
 pollution_train <- pollution[pollution$sample == "train", ]
 pollution_test <- pollution[pollution$sample == "test", ]
 
+# Naucenie modelu na train sete 
 model_1 <- glm(target ~ so2_log + nonwhite + rain, data = pollution_train, family = "binomial")
-model_2 <- glm(target ~ jantemp + rain + educ + nonwhite + whitecollar + housesize + income + hc + so2 + nox + region, data = pollution_train, family = "binomial")
-model_3 <- glm(target ~ jantemp + rain + educ + nonwhite + whitecollar + housesize + income + hc_log + so2_log + nox_log + region, data = pollution_train, family = "binomial")
+model_2 <- glm(target ~ jantemp + rain + educ + nonwhite + whitecollar + housesize + income + hc + so2 + nox , data = pollution_train, family = "binomial")
+model_3 <- glm(target ~ jantemp + rain + educ + nonwhite + whitecollar + housesize + income + hc_log + so2_log + nox_log, data = pollution_train, family = "binomial")
 
 summary(model_1) # all variables are significant
 summary(model_2)
@@ -520,7 +531,7 @@ summary(model_3)
 
 # Model 3,4 
 
-# Predictions
+# Predictions for test set
 pred_1 <- predict(model_1,newdata = pollution_test, type = "response")
 pred_2 <- predict(model_2,newdata = pollution_test, type = "response")
 pred_3 <- predict(model_3,newdata = pollution_test, type = "response")
@@ -530,6 +541,34 @@ pred_3 <- predict(model_3,newdata = pollution_test, type = "response")
 library(pROC)
 library(tidyverse)
 
+
+## ROC CURVE AND AUC FOR TRAIN SET
+par(pty="s") 
+lrROC <- roc(pollution_train$target ~ predict(model_1, type = "response"),
+             plot=TRUE,
+             print.auc=TRUE,
+             col="green",
+             lwd =3,
+             legacy.axes=TRUE,
+             print.auc.x = 0.4,
+             print.auc.y = 0.80,
+             main="ROC Curves - train set")
+
+roc(pollution_train$target, predict(model_2, type = "response"), col="blue",print.auc.y = 0.72, print.auc.x = 0.4,
+    plot = TRUE,add = TRUE, print.auc=TRUE, lwd =3)
+
+roc(pollution_train$target, predict(model_3, type = "response"), col="red",print.auc.y = 0.64, print.auc.x = 0.4,
+    plot = TRUE,add = TRUE, print.auc=TRUE, lwd =3)
+
+
+legend("bottomright", legend = c("model 1", "model 2", "model 3"),
+       col = c("green", "blue","red"), lwd = 3, cex = 0.6)
+
+par(pty="m")
+
+
+
+## ROC CURVE AND AUC FOR TEST SET
 par(pty="s") 
 lrROC <- roc(pollution_test$target ~ pred_1,
              plot=TRUE,
@@ -539,7 +578,7 @@ lrROC <- roc(pollution_test$target ~ pred_1,
              legacy.axes=TRUE,
              print.auc.x = 0.4,
              print.auc.y = 0.80,
-             main="ROC Curves")
+             main="ROC Curves - test set")
 
 roc(pollution_test$target, pred_2, col="blue",print.auc.y = 0.72, print.auc.x = 0.4,
     plot = TRUE,add = TRUE, print.auc=TRUE, lwd =3)
@@ -553,6 +592,10 @@ legend("bottomright", legend = c("model 1", "model 2", "model 3"),
 
 par(pty="m")
 
+## Vidime, ze pri test sete nam vyrazne klesla predikcna sila u modelov. Najviac klesla a modelu 2 a 3, pricom model 1 ma na testovacom sete najlepsiu predikcnu silu
+# Z tohto vidime, ze pouzitie tolkych premennych nebolo vhodne pre takto maly dataset (malo pozorovani)
+# Na zaklade tohto zistenia, by sme zvolili radsej jednoduchsi model, ktory sa nedokaze overfitnut (preucit)
+# Pozrime sa este na distribuciu predikcii
 
 
 #########
@@ -591,14 +634,6 @@ p3 <-
 
 p1 + p2 + p3 
 
-# Model 3 nema vhodnu distribuciu predikcii. Vyzera ze sa model prilis preucil a dokaze velmi dobre predikovat target podla ktorych sa ucil.
-#         je dost pravdepodobne, ze v pripade novych pozorovani, by vykonnost vyrazne klesla
-
-# 
-
-
-# Distribucie su velmi podobne
-
 # So zvysujucou predikovanou pravdepodobnostou by mal podiel modrej farby narastat.
 
 p1 <- 
@@ -631,4 +666,16 @@ p3 <-
 
 
 p1 + p2 + p3 
+
+
+# Model 1 ma najlepsi priebehe distribucie.
+
+
+## Zaver:
+# Ak nerozdelime data na trenovaciu a testovaciu vzorku, tak najlepsiu predikcnu silu ma ocakavane model 3, kedze ma najvac premennych
+# Po rozdeleni na train a test set sme si vsak mohli vsimnut, ze  je vhodnejsie pouzit model 1 s malo premennymi, nakolko model nema tendenciu preucit sa (overfitting).
+# Model s menej premennymi bude aj lahsie pouzitelny na miesta mimo USA, kedze budu lahsie pristupne potrebne data. 
+
+# Na zaklade analyz sme sa rozhodli pre model 1 
+
 
