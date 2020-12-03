@@ -1,0 +1,211 @@
+##
+#
+# MEBn5034 Assignment 02 (empty) - network connectivity
+#
+##
+
+### Instructions ###
+
+# Save this script under the new name with your surname appended 
+# E.g.: MVZn5034_03_Assignment_Ocelik.R
+
+# Write the commands directly to this newly saved script
+# It sufficient to use just one solution to each task
+# Upload the script into the corresponding Homework Vault when you are finished 
+
+# ?function_name gives you a hint what function to use and how to use it
+# It also opens, often a quite comprehensive, documentation of the function
+# Do not copy paste the complete function description, typically we are OK with 1-4 arguments 
+
+
+#
+# 1. read in two-mode dataset "davis.csv" and save it into a separate object called davis
+# For more info on dataset: https://networkdata.ics.uci.edu/netdata/html/davis.html
+#
+
+#?read.table
+davis <- read.table("davis.csv")
+
+
+# make sure that your data is saved as a matrix!
+#?as.matrix
+is.matrix(davis)  # FALSE -> we are going to transform it to matrix 
+
+davis <- as.matrix(davis)  # transform
+
+is.matrix(davis)  # TRUE, OK!
+
+#
+# 2. visualize the corresponding bipartite network
+#
+
+?gplot
+library("sna")
+par(mar = c(0,0,0,0))
+
+gplot(davis, 
+      gmode = "twomode", 
+      usearrows = FALSE,
+      edge.col = "gray50",
+      label.pos = 3,
+      label.cex = 0.6,
+      label = network.vertex.names(network(davis, bipartite = T))
+)
+
+#
+# 3. create one-mode projections of the bipartite network
+# call the resulting adjacency matrices as actors and events
+# HINT: combine matrix multiplication operator and transpose function
+#
+
+#?t
+actors <- davis %*% t(davis)
+events <- t(davis) %*% davis
+
+actors 
+events 
+
+# Undirected - check: should be symmetric
+all(actors == t(actors))  # it's ok
+all(events == t(events))  # it's ok
+
+
+#
+# 4. visualize and calculate densities of the one mode projections (resulting unipartite networks)
+#
+
+?gden # set ignore.eval argument accordinly (the unipartite networks are valued)
+
+# Actors and events are undirected networks
+# All possible ties:  (n^2 - n)/2 = n*(n-1)/2   = all pairs - diagonal divided by 2 to get only lower/upper triangle
+
+# set ignore.eval
+# ---> DEPENDS ON WHAT WE WANT TO KNOW:
+#   a) Mean number of connections / How many people did I meet in average  ->  # commented (ignore.eval = FALSE)
+#   b) Percentage of all possible connections (pairs)   # -> final answer (ignore.eval = TRUE)
+
+### Actors:
+
+#gden(actors, ignore.eval = FALSE, diag = FALSE) # Interpretation:  mean number of connections with other people = 2.104576
+#mean(actors[lower.tri(actors, diag = FALSE)]) # manual calculation
+
+gden(actors, ignore.eval = TRUE, diag = FALSE)  # Interpretation: percentage of all possible connections = 0.9084 = 90,84 %  
+mean(ifelse(actors >= 1, 1,0)[lower.tri(actors, diag = FALSE)]) # manual calculation
+
+### Events
+
+#gden(events, ignore.eval = FALSE, diag = FALSE) # Interpretation:  mean number of connections with other events = 2.351648
+#mean(events[lower.tri(events, diag = FALSE)]) # manual calculation
+
+gden(events, ignore.eval = TRUE, diag = FALSE)  # Interpretation: percentage of all possible event connections = 0.7252 = 72,52 %  
+mean(ifelse(events >= 1, 1,0)[lower.tri(events, diag = FALSE)]) # manual calculation
+
+
+# Visualisation
+
+par(mfrow=c(1,2))
+# insert both gplot functions inbetween the par functions 
+# ?gplot
+gplot(actors, gmode = "graph",label.pos = 5, label.cex = 0.6, label = rownames(actors), vertex.col = "yellow")
+gplot(events, gmode = "graph",label.pos = 5, label.cex = 0.6, label = rownames(events), vertex.col = "yellow")
+
+par(mfrow=c(1,1))
+
+
+# choose ONE of the one-mode projections and perform following tasks
+
+#
+# 5. binarize the network based on the 75% (upper) quantile of the tie weights
+# i.e.: only ties with weight > 75% quantile are kept
+#
+
+# simply apply quantile function to the adjacency matrix (unipartite network)
+# it will give you tie weights for corresponding quantiles
+
+?quantile
+q75 <- quantile(actors, probs = 0.75)
+
+# use the 75% quantile to binarize the matrix
+# m > 75% are kept (1), otherwise removed (0)
+# HINT: use [] and logical indexing or ifelse function
+
+actors_q75 <- ifelse(actors > q75 , 1, 0) 
+
+#
+# 6. symmetrize the matrix according to a weak rule (symmetrization over maximum)
+# do not forget to save the node labels before symmetrizing to a separate object
+#
+
+# save labels (use rownames or colnames function)
+actor_names <- row.names(actors_q75)
+
+
+# symmetrize
+?symmetrize
+actors_q75_sym <- symmetrize(actors_q75, rule = "weak")
+
+# assign labels back to the symmetrized matrices (use again rownames or colnames function)
+rownames(actors_q75_sym) <- actor_names
+colnames(actors_q75_sym) <- actor_names
+
+
+#
+# 7. plot the network without isolates (if there are isolates)
+# HINT: use displayisolates argument
+#
+
+?gplot
+gplot(actors_q75_sym, 
+      displayisolates = FALSE, 
+      gmode = "graph", 
+      label = row.names(actors_q75_sym), 
+      vertex.cex = 1.3,
+      vertex.col = "yellow",
+      label.pos = 5, label.cex = 0.5)
+
+
+#
+# 8. calculate density and connectedness 
+#
+
+?gden
+?connectedness
+
+gden(actors_q75_sym) 
+connectedness(actors_q75_sym) 
+
+# Krackhardt connectedness = 
+#  1 minus [  total # of pairs that are not mutually reachable  OVER  maximum # of possible pair combinations]
+
+#
+# 9. determine diameter of the network
+# HINT: extract the gdist object from the list returned by geodist function
+# save the geodist function into a separate objecte and use function str to explore its internal structure
+# gdist is a matrix of distances, then use max function to determin its highest value = longest geodesic
+# ALSO: there infinite vales for the actors one-mode projection (b/c of isolates) 
+# Thus, you need to apply max function only to non-infinite values
+# You can use [] and logical indexing: ...!= Inf
+#
+
+?gdist
+?max
+
+#?geodist
+actors_gdist <- geodist(actors_q75_sym)$gdist
+
+str(actors_gdist)
+diameter <- max(actors_gdist[actors_gdist != Inf])
+
+print(diameter)  # diameter = 2
+
+
+#
+# 10. export the network into *.txt file names "actors.txt" or "events.txt"
+# export the matrix only with column names, not rownames
+# (set arguments row.names and col.names accordingly)
+#
+
+?write.table
+write.table(actors_q75_sym, "actors.txt", row.names = FALSE, col.names = TRUE)
+
+# end of script
